@@ -1,4 +1,4 @@
-# Project Name
+# AI Video Intelligence Solution Accelerator
 
 (short, 1-3 sentenced, description of the project)
 
