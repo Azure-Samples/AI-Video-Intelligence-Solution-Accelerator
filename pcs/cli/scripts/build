@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Copyright (c) Microsoft. All rights reserved.
+# Note: Windows Bash doesn't support shebang extra params
+set -e
+
+# Build the CLI
+
+APP_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )/"
+cd $APP_HOME
+
+npm install
+git checkout package-lock.json
+npm install
+npm start
+
+MARK='\033[1;33m'
+RST='\033[0m'
+
+echo -e "Run '${MARK}npm link${RST}' to install the '${MARK}pcs${RST}' binary just built, or run '${MARK}npm run main${RST}' to skip the installation ('npm run main -- <params>' to pass parameters)."

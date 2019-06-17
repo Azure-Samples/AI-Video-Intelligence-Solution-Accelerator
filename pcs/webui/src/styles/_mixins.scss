@@ -1,0 +1,55 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+// import the default css mixins like the themify mixin
+@import "~@microsoft/azure-iot-ux-fluent-css/src/mixins";
+@import 'variables';
+
+// ========================== Pixel to REM conversion mixins - START
+
+// A function to convert Px to REM according to the base font Px size
+@function pxToRem($pxValue) {
+  $remSize: $pxValue / $baseFontSize;
+  @return #{$remSize}rem;
+}
+
+// A mixin that converts the provided Px values to REMs
+@mixin rem-fallback($property, $values...) {
+  $max: length($values);
+  $pxValues: '';
+  $remValues: '';
+
+  @for $i from 1 through $max {
+    $pxValue: nth($values, $i);
+    $pxValues: #{$pxValues + $pxValue};
+    $remValue: pxToRem($pxValue);
+    $remValues: #{$remValues + $remValue};
+
+    @if $i < $max {
+      $pxValues: #{$pxValues + " "};
+      $remValues: #{$remValues + " "};
+    }
+  }
+
+  #{$property}: $pxValues;
+  #{$property}: $remValues;
+}
+
+// A helper mixin for converting Px to REMs for the font-size property
+@mixin rem-font-size($pxFontSize) {
+  @include rem-fallback(font-size, $pxFontSize);
+}
+
+// A helper mixin for converting Px to REMs for height and width properties
+@mixin square-px-rem($pxValue) {
+  @include rem-fallback(height, $pxValue);
+  @include rem-fallback(width, $pxValue);
+}
+
+// ========================== Pixel to REM conversion mixins - END
+
+@mixin linear-gradient($top-color, $top-opacity, $bottom-color, $bottom-opacity) {
+  background: -moz-linear-gradient(top, rgba($top-color, $top-opacity) 0%, rgba($bottom-color, $bottom-opacity) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top, rgba($top-color, $top-opacity) 0%, rgba($bottom-color, $bottom-opacity) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom, rgba($top-color, $top-opacity) 0%, rgba($bottom-color, $bottom-opacity) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#{ie-hex-str(rgba($top-color, $top-opacity))}', endColorstr='#{ie-hex-str(rgba($bottom-color, $bottom-opacity))}',GradientType=0 ); /* IE6-9 */
+}

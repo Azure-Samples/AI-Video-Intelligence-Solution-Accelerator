@@ -1,0 +1,32 @@
+FROM azureaivideo/aivideoshared:0.0.3 AS build-env
+
+WORKDIR /app
+
+COPY *.csproj ./
+RUN dotnet restore
+
+COPY . ./
+RUN dotnet publish -c Release -o out
+
+FROM microsoft/dotnet:2.2-runtime-stretch-slim
+
+# soft link
+RUN ln -s /lib/x86_64-linux-gnu/libdl-2.24.so /lib/x86_64-linux-gnu/libdl.so
+
+# install System.Drawing native dependencies
+RUN apt-get update \
+    && apt-get install -y --allow-unauthenticated \
+   		libgdiplus \
+         libc6-dev \
+         libgdiplus \
+         libx11-dev \
+     && rm -rf /var/lib/apt/lists/* \
+     && ldconfig
+
+WORKDIR /app
+COPY --from=build-env /app/out ./
+
+RUN useradd -ms /bin/bash moduleuser
+USER moduleuser
+
+ENTRYPOINT ["dotnet", "VideoProcessorModule.dll"]

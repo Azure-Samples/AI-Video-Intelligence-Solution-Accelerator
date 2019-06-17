@@ -1,0 +1,42 @@
+# You can use this file to setup the service locally, and start all the
+# containers at once.
+#
+# Usage:
+# - setup all the environment variables referenced below
+# - install Docker Compose, see https://docs.docker.com/compose/install
+# - open a console and `cd` into the folder that contains this file
+# - run `docker-compose up`
+
+version: "3"
+
+services:
+  telemetry:
+    image: azureiotpcs/telemetry-dotnet:testing
+    ports:
+      - "9004:9004"
+    environment:
+      - PCS_STORAGEADAPTER_WEBSERVICE_URL=http://localhost:9022/v1
+      - PCS_DIAGNOSTICS_WEBSERVICE_URL
+      - PCS_AUTH_WEBSERVICE_URL
+      - PCS_TELEMETRY_DOCUMENTDB_CONNSTRING
+      - PCS_AAD_TENANT
+      - PCS_AAD_APPID
+      - PCS_AAD_APPSECRET
+      - PCS_TELEMETRY_STORAGE_TYPE
+      - PCS_TSI_FQDN
+      - PCS_AZUREBLOB_CONNSTRING
+      - PCS_ACTION_EVENTHUB_CONNSTRING
+      - PCS_ACTION_EVENTHUB_NAME
+      - PCS_LOGICAPP_ENDPOINT_URL
+      - PCS_SOLUTION_WEBSITE_URL
+
+  auth:
+    image: azureiotpcs/pcs-auth-dotnet:testing
+    ports:
+      - "9001:9001"
+    environment:
+      - PCS_AUTH_ISSUER
+      - PCS_AUTH_AUDIENCE
+      - PCS_AUTH_REQUIRED
+      - PCS_CORS_WHITELIST
+      - PCS_APPLICATION_SECRET

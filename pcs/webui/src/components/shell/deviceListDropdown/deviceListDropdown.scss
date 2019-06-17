@@ -1,0 +1,12 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/themes';
+@import 'src/styles/mixins';
+
+
+.device-list-dropdown {
+
+  @include rem-fallback(width, 275px);
+
+  margin-right: 1em;
+}

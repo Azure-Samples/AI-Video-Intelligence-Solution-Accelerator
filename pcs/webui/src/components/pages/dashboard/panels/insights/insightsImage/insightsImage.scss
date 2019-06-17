@@ -1,0 +1,30 @@
+
+.insights-image-container {
+  display:inline-block;
+  //border: 1px solid red;
+  position:relative;
+  width: 100%;
+
+  .insights-image {
+    //border: 1px solid blue;
+    position:absolute;
+    z-index:1;
+    width: 100%;
+  }
+
+  canvas {
+    position:relative;
+    z-index:20;
+    font-weight: lighter;
+    //border: 1px solid red;
+  }
+
+  .insights-canvas {
+    //border: 1px solid green;
+    position:relative;
+    z-index:20;
+    width: 100%;
+    //border: 1px solid red;
+  }
+
+}

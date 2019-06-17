@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <RootNamespace>Microsoft.Azure.IoTSolutions.DeviceTelemetry.ActionsAgent</RootNamespace>
+        <AssemblyName>Microsoft.Azure.IoTSolutions.DeviceTelemetry.ActionsAgent</AssemblyName>
+        <TargetFramework>netstandard2.0</TargetFramework>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Services\Services.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Azure.EventHubs" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Azure.EventHubs.Processor" Version="2.2.0" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="data\EmailTemplate.html">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+</Project>

@@ -1,0 +1,126 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build-asamanager",
+            "command": "${workspaceFolder}/asa-manager/scripts/build",
+            "windows": {
+                "command": "${workspaceFolder}\\asa-manager\\scripts\\build.cmd"
+            },
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-telemetry",
+            "command": "${workspaceFolder}/device-telemetry/scripts/build",
+            "windows": {
+                "command": "${workspaceFolder}\\device-telemetry\\scripts\\build.cmd"
+            },
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile",
+            "options": {
+                "env": {
+                    "PCS_AUTH_ISSUER": "fake",
+                    "PCS_AUTH_AUDIENCE": "fake"
+                }
+            }
+        },
+        {
+            "label": "build-iothubmanager",
+            "command": "${workspaceFolder}/iothub-manager/scripts/build",
+            "windows": {
+                "command": "${workspaceFolder}\\iothub-manager\\scripts\\build.cmd"
+            },
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile",
+            "options": {
+                "env": {
+                    "PCS_AUTH_ISSUER": "fake",
+                    "PCS_AUTH_AUDIENCE": "fake"
+                }
+            }
+        },
+        {
+            "label": "build-auth",
+            "command": "${workspaceFolder}/auth/scripts/build",
+            "windows": {
+                "command": "${workspaceFolder}\\auth\\scripts\\build.cmd"
+            },
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-config",
+            "command": "${workspaceFolder}/config/scripts/build",
+            "windows": {
+                "command": "${workspaceFolder}\\config\\scripts\\build.cmd"
+            },
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "build-storageadapter",
+            "command": "${workspaceFolder}/storage-adapter/scripts/build",
+            "windows": {
+                "command": "${workspaceFolder}\\storage-adapter\\scripts\\build.cmd"
+            },
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "device-simulation-launch",
+            "command": "${workspaceFolder}/scripts/local/launch/start-device-simulation.sh",
+            "windows": {
+                "command": "${workspaceFolder}\\scripts\\local\\launch\\start-device-simulation.cmd"
+            },
+            "type": "shell",
+            "group": "build",
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "Build All",
+            "dependsOn": [
+                "build-storage-adapter",
+                "build-config",
+                "build-auth",
+                "build-iothub-manager",
+                "build-telemetry",
+                "build-asa-manager"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "build-config-start-simulation",
+            "dependsOn": [
+                "device-simulation-launch",
+                "build-config"
+            ]
+        }
+    ]
+}

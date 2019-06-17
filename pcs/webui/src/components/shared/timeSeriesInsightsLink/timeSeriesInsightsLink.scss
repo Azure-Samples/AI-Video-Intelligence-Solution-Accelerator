@@ -1,0 +1,11 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/mixins';
+@import 'src/styles/themes';
+
+.time-series-explorer-container {
+  display: block;
+  padding: 0;
+  text-align: right;
+  width: 100%;
+}

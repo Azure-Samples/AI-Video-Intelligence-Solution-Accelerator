@@ -1,0 +1,19 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/themes';
+@import 'src/styles/mixins';
+
+.flyout-container {
+  // override the fluent controls styling till we fix the IA issues:
+  @media(min-width: $screen-sm) {
+    width: $screen-sm;
+  }
+
+  @include themify($themes) {
+    // since the background color has changed, the borders for grids looks weird. To match
+    // the fluent behavior, don't show row separators for grids in a tile:
+    :global(.ag-row) {
+      border-color: themed('colorFlyoutBackground') !important;
+    }
+  }
+}

@@ -1,0 +1,13 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/variables';
+@import 'src/styles/mixins';
+@import 'src/styles/themes';
+
+.devices-container {
+  padding: $baseContentPadding;
+  overflow: hidden;
+  @include themify($themes) {
+    .status { color: themed('colorContentText'); }
+  }
+}

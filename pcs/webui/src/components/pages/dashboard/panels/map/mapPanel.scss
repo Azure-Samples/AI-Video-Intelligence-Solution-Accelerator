@@ -1,0 +1,74 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/mixins';
+@import 'src/styles/themes';
+
+$zoomBtnPadding: 10px;
+$zoomBtnSize: 40px;
+$zoomBtnFont: 20px;
+
+.map-panel-container {
+  display: flex;
+  flex-flow: column nowrap;
+  flex-grow: 1;
+  padding: 0 !important;
+
+  .zoom-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    font-size: $zoomBtnFont;
+    width: $zoomBtnSize;
+    height: $zoomBtnSize;
+    line-height: $zoomBtnSize;
+    border: none;
+    cursor: pointer;
+
+    &.zoom-in {
+      top: $zoomBtnPadding;
+      right: $zoomBtnPadding;
+    }
+
+    &.zoom-out {
+      top: 2 * $zoomBtnPadding + $zoomBtnSize;
+      right: $zoomBtnPadding;
+    }
+  }
+
+  .popup-close{
+    margin: $grid-size;
+  }
+
+  .popup-content-box {
+    border: 1px solid;
+    border-left: 6px solid transparent;
+    cursor: pointer;
+    @include rem-font-size(14px);
+    @include rem-fallback(padding, 8px, 12px);
+
+    .popup-type { font-weight: bold; }
+  }
+
+  #map { flex-grow: 1 }
+
+  @include themify($themes) {
+    .zoom-btn {
+      color: themed('color-text-rest');
+      background-color: themed('color-bg-balloon');
+    }
+
+    .popup-close{
+      color: themed('color-text-rest');
+    }
+
+    .popup-content-box {
+      color: themed('color-text-rest');
+      background-color: themed('color-bg-balloon');
+      border-color: themed('color-border-controls');
+      &.nominal { border-color: themed('colorGridSelectedRowBorder'); }
+      &.warning { border-color: themed('colorWarning'); }
+      &.alert { border-color: themed('colorAlert'); }
+    }
+  }
+}

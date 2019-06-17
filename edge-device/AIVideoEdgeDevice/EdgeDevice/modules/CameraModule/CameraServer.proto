@@ -1,0 +1,26 @@
+﻿syntax = "proto3";
+
+package CameraServer;
+
+enum PortNumbers {
+  Unused = 0;
+  CameraServerPort = 28962;
+}
+
+// The CameraServerGrpc service definition.
+service GrpcChannel {
+  // Sends an image
+  rpc RequestImage (ImageRequest) returns (ImageReply) {}
+}
+
+// The request message
+message ImageRequest {
+  string cameraHardwareId = 1;
+}
+
+// Error is an empty string for success
+message ImageReply {
+  string error = 1;
+  bytes fullImage = 2;
+  bytes smallImage = 3;
+}

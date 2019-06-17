@@ -1,0 +1,25 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/mixins';
+@import 'src/styles/themes';
+
+.device-stats-container {
+  padding: 0 !important;
+
+  .stat-header {
+    @include rem-fallback(padding, 10px);
+    font-family: $fontSelawikSemibold;
+    @include rem-font-size(40px);
+  }
+
+  .stats-group { @include rem-fallback(padding-left, 20px); }
+  .stat-property { @include rem-fallback(padding-bottom, 20px); }
+
+  @include themify($themes) {
+    color: themed('colorContentTextDim');
+
+    .stat-value { color: themed('colorContentText'); }
+    .severity-critical { fill: themed('colorAlert'); }
+    .severity-warning { fill: themed('colorWarning'); }
+  }
+}

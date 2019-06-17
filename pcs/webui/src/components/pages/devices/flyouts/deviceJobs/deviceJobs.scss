@@ -1,0 +1,83 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/variables';
+@import 'src/styles/mixins';
+@import 'src/styles/themes';
+
+.device-jobs-container {
+  @include rem-font-size(14px);
+  @include rem-fallback(padding, 12px, 0px);
+
+  .section-header { @include rem-font-size(16px); }
+
+  .form-group-label { @include rem-font-size(16px); }
+
+  .help-message { @include rem-fallback(margin-bottom, 4px); }
+
+  .radio-container {
+    margin-top: 0px;
+
+    .form-group-label { @include rem-font-size(14px); }
+  }
+
+  .row {
+    .cell {
+      &.col-1 { @include rem-fallback(width, 16px); }
+      &.col-3 {
+        @include rem-fallback(width, 100px);
+
+        input { @include rem-fallback(width, 100px); }
+      }
+
+      &.text-only { @include rem-fallback(padding-top, 4px); }
+    }
+
+    &.action-row {
+      border: 0;
+      @include rem-fallback(padding, 4px, 0px);
+
+      .btn {
+        justify-content: flex-start;
+        @include rem-fallback(padding, 0px);
+      }
+    }
+
+    &.error-data-row { border-bottom: 0 !important; }
+
+    &.error-msg-row { @include rem-fallback(padding-top, 0px); }
+  }
+
+  .icon-only-btn {
+    min-width: 0;
+    padding: 0;
+    @include square-px-rem($input-height);
+  }
+
+  .data-grid { @include rem-fallback(margin-top, 16px); }
+
+  .device-jobs-info {
+    @include rem-fallback(margin, 12px, 0px);
+    @include rem-fallback(padding, 16px);
+  }
+
+  .device-jobs-error {
+    border: 1px transparent solid;
+    @include rem-fallback(margin, 12px, 0px);
+    @include rem-fallback(padding, 16px);
+  }
+
+  .wait-indicator { @include rem-fallback(margin-left, 8px); }
+
+  .summary-icon svg {
+    @include square-px-rem(16px);
+    @include rem-fallback(margin-left, 8px);
+  }
+
+  @include themify($themes) {
+    color: themed('colorContentTextDim');
+
+    .device-jobs-error { border-color: themed('colorAlert'); }
+
+    .summary-icon svg { fill: themed('colorContentText'); }
+  }
+}

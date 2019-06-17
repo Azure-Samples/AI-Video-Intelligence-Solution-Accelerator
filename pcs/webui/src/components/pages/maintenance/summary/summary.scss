@@ -1,0 +1,20 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/mixins';
+@import 'src/styles/themes';
+
+.summary-container {
+
+  .no-data-msg {
+    text-align: center;
+    @include rem-fallback(padding, 20px);
+    @include rem-font-size(20px);
+  }
+
+  .summary-stat-container { @include rem-fallback(padding-bottom, 20px); }
+
+  @include themify($themes) {
+      .stat-warning { fill: themed('colorWarning'); }
+      .stat-critical { fill: themed('colorAlert'); }
+  }
+}

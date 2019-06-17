@@ -1,0 +1,27 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/themes';
+@import 'src/styles/mixins';
+
+.time-interval-dropdown {
+  @include rem-fallback(width, 200px);
+  .time-interval-dropdown-select {
+    height: 100%;
+
+    @include themify($themes) {
+      // match the background color of the underlying panel:
+      background-color: themed('color-bg-content');
+
+      &:not(:active),
+      &:not(:hover),
+      &:not(:focus) {
+        border-top-color: transparent;
+        border-bottom-color: transparent;
+      }
+    }
+  }
+
+  .time-interval-dropdown-chevron {
+    top: 4 * $grid-size;
+  }
+}

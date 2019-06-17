@@ -1,0 +1,45 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/themes';
+@import 'src/styles/mixins';
+
+$headerHeight: 48px;
+
+.context-menu-container {
+  display: flex;
+  flex-flow: row nowrap;
+  flex-shrink: 0;
+  justify-content: flex-end; // Move buttons to the right of the context menu
+  @include rem-fallback(height, $headerHeight);
+
+  .context-menu-align-container {
+    display: flex;
+    flex-grow: 1;
+
+    &.left { justify-content: flex-start; }
+
+    &.right { justify-content: flex-end; }
+  }
+
+  .last-updated-container {
+    margin: 0;
+    align-items: center;
+    @include rem-fallback(padding, 0px, 10px);
+  }
+
+  // buttons in the context menu should be centered vertically:
+  :global(.btn) {
+    height: 100%;
+  }
+
+  @include themify($themes) {
+    border-bottom: 1px solid themed('colorContextMenuBorderColor');
+
+    .btn:hover {
+      background-color: themed('colorContextMenuBtnBgHover');
+      color: themed('colorContextMenuBtnTextHover');
+
+      svg { fill: themed('colorContextMenuBtnSvgFill'); }
+    }
+  }
+}

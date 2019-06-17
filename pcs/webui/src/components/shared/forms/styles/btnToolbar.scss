@@ -1,0 +1,10 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/mixins';
+
+.btn-toolbar {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-end;
+  @include rem-fallback(padding-top, 32px);
+}

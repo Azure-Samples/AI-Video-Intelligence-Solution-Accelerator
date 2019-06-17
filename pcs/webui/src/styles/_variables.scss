@@ -1,0 +1,16 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import "~@microsoft/azure-iot-ux-fluent-css/src/constants";
+@import "~@microsoft/azure-iot-ux-fluent-css/src/typography";
+
+// The page base font applied to the HTML tag
+// Sets the relative REM font scaling across the app
+$baseFontSize: $font-size-default;
+$baseContentPadding: $gutter-normal;
+
+// Variables for the selawik font family names
+$fontSelawik: $font-family-default;
+$fontSelawikBold: $font-family-default;
+$fontSelawikLight: $font-family-light;
+$fontSelawikSemibold: $font-family-default;
+$fontSelawikSemilight: $font-family-light;

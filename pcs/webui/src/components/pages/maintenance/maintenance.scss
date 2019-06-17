@@ -1,0 +1,94 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/variables';
+@import 'src/styles/mixins';
+@import 'src/styles/themes';
+
+$font-weight-bold: 700;
+
+.maintenance-container {
+  display: flex;
+  flex-flow: column nowrap;
+  padding: $baseContentPadding;
+
+  .maintenance-sub-header {
+    font-weight: $font-weight-bold;
+    margin: 0;
+    margin-right: 2*$grid-size;
+    @include rem-font-size(8*$grid-size);
+  }
+
+  .header-container {
+    display: flex;
+    flex-flow: row wrap;
+    flex-shrink: 0;
+    align-items: flex-end;
+    padding-bottom: 2*$grid-size;
+  }
+
+  .sub-heading { font-weight: normal; }
+
+  .tab-container {
+    display: flex;
+    flex-flow: row wrap;
+    flex-shrink: 0;
+
+    .tab {
+      text-decoration: none;
+      padding: $grid-size 0;
+      padding-bottom: 2*$grid-size;
+      font-weight: $font-weight-bold;
+      margin-right: 8*$grid-size;
+      background: none;
+      border: none;
+      cursor: pointer;
+      @include rem-font-size(8*$grid-size);
+    }
+  }
+
+  .grid-container {
+    display: flex;
+    flex-flow: column nowrap;
+    flex-grow: 1;
+
+    .temp-row {
+      text-decoration: none;
+      margin: 2*$grid-size 0;
+      padding: 2*$grid-size;
+    }
+
+    .padded-error { @include rem-fallback(padding-top, 4*$grid-size); }
+  }
+
+  .details-chart-container {
+    display: flex;
+    flex-flow: column wrap;
+    align-items: stretch;
+    flex-shrink: 0;
+    @include rem-fallback(height, 75*$grid-size);
+  }
+
+  @include themify($themes) {
+    color: themed('colorContentTextDim');
+
+    .tab-container {
+      border-bottom: 1px solid themed('color-border-panel');
+
+      .tab {
+        color: themed('colorContentText');
+
+        &.active {
+          color: themed('colorContentText');
+          border-bottom: $grid-size solid themed('color-border-selected');
+        }
+      }
+    }
+
+    .temp-row {
+      background-color: themed('colorGridRowBackground');
+      color: themed('colorGridCellText');
+
+      &:hover { background-color: themed('colorGridRowHoverBackground'); }
+    }
+  }
+}

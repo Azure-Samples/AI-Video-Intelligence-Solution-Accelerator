@@ -1,0 +1,147 @@
+@import 'src/styles/variables';
+@import 'src/styles/mixins';
+@import 'src/styles/themes';
+
+// Variable overrides
+$selectedRowBorderWidth: 4px;
+$rowBorderHeight: $grid-size;
+$rowLineHeight: 12*$grid-size; // fluent management-list-row-height
+$rowHeight: $rowLineHeight + 2*$rowBorderHeight;
+$headerResizeHeight: 18px;
+
+$pageTitleHeight: 85px;
+$refreshBarHeight: 16px;
+$font-family: $font-family-default;
+$icons-path: "~ag-grid-community/src/styles/icons/";
+$row-height: $rowHeight;
+$header-height: $rowHeight;
+$background-color: transparent;
+$tab-background-color: transparent;
+$odd-row-background-color: transparent;
+$border-color: transparent;
+$panel-background-color: transparent;
+$tool-panel-background-color: transparent;
+$card-background-color: transparent;
+$cell-highlight-border: transparent;
+$cell-horizontal-border: transparent;
+$header-background-color: transparent;
+
+@import 'node_modules/ag-grid-community/src/styles/ag-grid.scss';
+@import 'node_modules/ag-grid-community/src/styles/ag-theme-dark.scss';
+
+$doublePadding: $baseContentPadding * 2;
+.pcs-grid-container.ag-theme-dark {
+  @include ag-theme-classic($params);
+  height: calc(100% - #{$pageTitleHeight} - #{$refreshBarHeight});
+  position: relative;
+  flex-shrink: 0;
+
+  > .pcs-grid-loading-container {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    @include rem-fallback(padding, 20px 0px);
+
+    // When the grid loader is visible, we don't want to show the
+    // grid but we don't want to destroy the element either and
+    // pay the initialization cost again. With these styles we hide
+    // the grid when the loader is present.
+    & + div {
+      visibility: hidden; // Using visibility so AgGrid can autoSizeColumns correctly
+      height: 1px; // Height at 1px to avoid issues with a full grid creating ghost scroll effects
+    }
+  }
+
+  .ag-header-cell {
+    @include rem-font-size($font-size-small);
+
+    .ag-icon { cursor: auto; }
+  }
+
+  &.movable-columns .ag-header-cell:not(.checkbox-column) { cursor: move; }
+
+  .ag-row {
+    margin-bottom: 0;
+
+    .ag-cell {
+      outline: none;
+      border: none;
+      @include rem-fallback(line-height, $rowLineHeight);
+
+      &.first-child-column {
+        // Correct alignment of the padding since the border will add width
+        @include rem-fallback(padding-left, $cell-horizontal-padding - 1px - $selectedRowBorderWidth);
+        @include rem-fallback(border-left, $selectedRowBorderWidth solid transparent);
+      }
+    }
+
+  }
+
+  .ag-paging-button { cursor: pointer; }
+
+  @include themify($themes) {
+    .ag-header-cell-moving {
+      background-color: themed('colorGridRowSelectedBackground');
+      color: themed('colorGridCellText');
+    }
+
+    .ag-header-cell {
+      color: themed('colorGridCellText');
+
+      .ag-icon-none {
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.5s linear;
+        background-image: url(themed('gridSortIcon'));
+      }
+
+      .ag-icon-asc { background-image: url(themed('gridAscIcon')); }
+      .ag-icon-desc { background-image: url(themed('gridDescIcon')); }
+
+      .ag-header-cell-resize::after {
+        height: $headerResizeHeight;
+        margin-top: ($header-height - $headerResizeHeight)/2;
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s, opacity 0.1s linear;
+        @include rem-fallback(width, 3px);
+        @include rem-fallback(border-left, 1px solid transparent);
+        border-color: themed('colorGridRowBorder');
+      }
+
+      &:hover {
+        .ag-icon-none:not(.ag-hidden),
+        .ag-header-cell-resize::after {
+          visibility: visible;
+          opacity: 1;
+         }
+      }
+    }
+
+    .ag-row {
+      background-color: themed('color-bg-table');
+
+      // ag-grid doesn't really support row separators, so to emulate the fluent styling,
+      // add a big vertical border with the page content background color:
+      border-top: $rowBorderHeight solid themed('color-bg-content');
+      border-bottom: $rowBorderHeight solid themed('color-bg-content');
+
+      .ag-cell { color: themed('colorGridCellText'); }
+    }
+
+    .ag-paging-panel {
+      color: themed('colorGridHeaderText');
+
+      .ag-paging-button {
+        border: none;
+        background-color: transparent;
+        color: themed('colorGridHeaderText');
+
+        &:hover {
+          background-color: themed('colorGridRowBackground');
+          color: themed('colorGridCellText');
+        }
+      }
+    }
+  }
+}

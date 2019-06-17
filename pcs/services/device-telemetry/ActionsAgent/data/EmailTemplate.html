@@ -1,0 +1,20 @@
+﻿<head>
+    <style>
+        .email-body {
+            font-family: "Segoe UI";
+            color: #3e4145;
+        }
+    </style>
+</head>
+<body class="email-body">
+    <h1>${subject}</h1>
+    <h2>Details</h2>
+    <p><b>Time Triggered:</b> ${alarmDate}</p>
+    <p><b>Rule Id:</b> ${ruleId}</p>
+    <p><b>Rule Description:</b> ${ruleDescription}</p>
+    <p><b>Severity:</b> ${ruleSeverity}</p>
+    <p><b>Device Id:</b> ${deviceId}</p>
+    <h2>Notes</h2>
+    <p>${notes}</p>
+    <p>See alert and device details <a href="${alarmUrl}">here</a></p>
+</body>

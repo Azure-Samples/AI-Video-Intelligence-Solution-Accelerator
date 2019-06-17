@@ -1,0 +1,255 @@
+﻿{
+    "warnings": [],
+    "events": [
+        {
+            "schema": {
+                "rid": 0,
+                "$esn": "iothub-dfbli",
+                "properties": [
+                    {
+                        "name": "fuellevel",
+                        "type": "Double"
+                    },
+                    {
+                        "name": "fuellevel_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "coolant",
+                        "type": "Double"
+                    },
+                    {
+                        "name": "coolant_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "vibration",
+                        "type": "Double"
+                    },
+                    {
+                        "name": "vibration_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "iothub-message-schema",
+                        "type": "String"
+                    },
+                    {
+                        "name": "iothub-creation-time-utc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "$$CreationTimeUtc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "$$MessageSchema",
+                        "type": "String"
+                    },
+                    {
+                        "name": "$$ContentType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "iothub-connection-device-id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "iothub-connection-auth-method",
+                        "type": "String"
+                    },
+                    {
+                        "name": "iothub-connection-auth-generation-id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "iothub-enqueuedtime",
+                        "type": "DateTime"
+                    },
+                    {
+                        "name": "iothub-message-source",
+                        "type": "String"
+                    },
+                    {
+                        "name": "content-type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "content-encoding",
+                        "type": "String"
+                    }
+                ]
+            },
+            "$ts": "2018-08-15T19:17:55.27Z",
+            "values": [
+                70,
+                "Gal",
+                7131.01002155152,
+                "ohm",
+                10.2377443293751,
+                "mm",
+                "engine-sensors;v1",
+                "2018-08-15T19:17:54.9987406Z",
+                "2018-08-15T19:17:54+00:00",
+                "engine-sensors;v1",
+                "JSON",
+                "engine-01.0",
+                "{\"scope\":\"device\",\"type\":\"sas\",\"issuer\":\"iothub\",\"acceptingIpFilterRule\":null}",
+                "636699574686209640",
+                "2018-08-15T19:17:55.116Z",
+                "Telemetry",
+                "application/json",
+                "utf-8"
+            ]
+        },
+        {
+            "schema": {
+                "rid": 1,
+                "$esn": "iothub-dfbli",
+                "properties": [
+                    {
+                        "name": "temperature",
+                        "type": "Double"
+                    },
+                    {
+                        "name": "temperature_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "humidity",
+                        "type": "Double"
+                    },
+                    {
+                        "name": "humidity_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pressure",
+                        "type": "Double"
+                    },
+                    {
+                        "name": "pressure_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "iothub-message-schema",
+                        "type": "String"
+                    },
+                    {
+                        "name": "iothub-creation-time-utc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "$$CreationTimeUtc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "$$MessageSchema",
+                        "type": "String"
+                    },
+                    {
+                        "name": "$$ContentType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "iothub-connection-device-id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "iothub-connection-auth-method",
+                        "type": "String"
+                    },
+                    {
+                        "name": "iothub-connection-auth-generation-id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "iothub-enqueuedtime",
+                        "type": "DateTime"
+                    },
+                    {
+                        "name": "iothub-message-source",
+                        "type": "String"
+                    },
+                    {
+                        "name": "content-type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "content-encoding",
+                        "type": "String"
+                    }
+                ]
+            },
+            "$ts": "2018-08-15T19:17:55.32Z",
+            "values": [
+                75.5638623909624,
+                "F",
+                68.9882895045394,
+                "%",
+                138.29768736069,
+                "psig",
+                "chiller-sensors;v1",
+                "2018-08-15T19:17:54.8651584Z",
+                "2018-08-15T19:17:54+00:00",
+                "chiller-sensors;v1",
+                "JSON",
+                "chiller-01.0",
+                "{\"scope\":\"device\",\"type\":\"sas\",\"issuer\":\"iothub\",\"acceptingIpFilterRule\":null}",
+                "636699574686372620",
+                "2018-08-15T19:17:55.102Z",
+                "Telemetry",
+                "application/json",
+                "utf-8"
+            ]
+        },
+        {
+            "schemaRid": 0,
+            "$ts": "2018-08-15T19:18:04.974Z",
+            "values": [
+                70,
+                "Gal",
+                7566.90700663808,
+                "ohm",
+                10.3368370276116,
+                "mm",
+                "engine-sensors;v1",
+                "2018-08-15T19:18:04.8414093Z",
+                "2018-08-15T19:18:04+00:00",
+                "engine-sensors;v1",
+                "JSON",
+                "engine-01.0",
+                "{\"scope\":\"device\",\"type\":\"sas\",\"issuer\":\"iothub\",\"acceptingIpFilterRule\":null}",
+                "636699574686209640",
+                "2018-08-15T19:18:04.851Z",
+                "Telemetry",
+                "application/json",
+                "utf-8"
+            ]
+        },
+        {
+            "schemaRid": 1,
+            "$ts": "2018-08-15T19:18:05.029Z",
+            "values": [
+                76.297191621292,
+                "F",
+                66.9310929288301,
+                "%",
+                144.789075548662,
+                "psig",
+                "chiller-sensors;v1",
+                "2018-08-15T19:18:04.8407575Z",
+                "2018-08-15T19:18:04+00:00",
+                "chiller-sensors;v1",
+                "JSON",
+                "chiller-01.0",
+                "{\"scope\":\"device\",\"type\":\"sas\",\"issuer\":\"iothub\",\"acceptingIpFilterRule\":null}",
+                "636699574686372620",
+                "2018-08-15T19:18:04.838Z",
+                "Telemetry",
+                "application/json",
+                "utf-8"
+            ]
+        }
+    ]
+}

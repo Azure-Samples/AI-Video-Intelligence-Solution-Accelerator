@@ -1,0 +1,87 @@
+// Copyright (c) Microsoft. All rights reserved.
+
+@import 'src/styles/mixins';
+@import 'src/styles/themes';
+
+$read-more: 4*$grid-size;
+
+.analytics-panel-container {
+  display: flex;
+  flex-flow: row wrap;
+  height: 100%;
+
+  .analytics-cell {
+    display: flex;
+    flex-flow: column nowrap;
+    width: 50%;
+    height: 50%;
+
+    &.full-width {
+      width: 100%;
+    }
+
+    &.read-more {
+      height: calc(50% - #{$read-more});
+    }
+
+    .critical-alerts {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+      font-family: $fontSelawikLight;
+      @include rem-font-size(15*$grid-size);
+
+      .analytics-percentage-container {
+        display: flex;
+        align-items: flex-end;
+
+        .analytics-percentage-sign {
+          @include rem-font-size(10*$grid-size);
+        }
+      }
+    }
+  }
+
+  .chart-container {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @include themify($themes) {
+
+    // Overrides of the TSIChart Lib
+    text {
+      fill: themed('colorContentText');
+    }
+
+    .tsi-barChart {
+      background: transparent;
+
+      text {
+        fill: themed('colorContentText') !important;
+      }
+    }
+
+    .tsi-pieChart {
+      background: transparent;
+
+      .tsi-pieChartSVG path {
+        stroke: themed('colorDashboardPanelContentBg');
+      }
+    }
+
+    .analytics-cell {
+      .analytics-header {
+        color: themed('colorContentText');
+      }
+
+      .critical-alerts {
+        .analytics-header {
+          color: themed('colorContentText');
+        }
+      }
+    }
+  }
+}

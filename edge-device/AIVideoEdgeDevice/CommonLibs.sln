@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CameraSim", "shared-libs\CameraSim\CameraSim.csproj", "{09AA4D0A-D68E-4DC4-A7D6-7CB906ECB4CD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CameraSimTest", "CameraSimTest\CameraSimTest.csproj", "{9CE197FF-1912-420C-9380-437F3394AEDE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlobStorage", "shared-libs\BlobStorage\BlobStorage.csproj", "{61CFA9EF-6EF6-4EEE-B18A-1993D4808873}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrpcTestServer", "GrpcTestServer\GrpcTestServer.csproj", "{7AF2545B-307C-4A93-B915-9818DCFA0D2E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GrpcTestClient", "GrpcTestClient\GrpcTestClient.csproj", "{F29BD994-AF4B-4DB2-BD9E-64E65BF7F0E2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoProcessorGrpc", "shared-libs\VideoProcessorGrpc\VideoProcessorGrpc.csproj", "{058FDE16-5CC5-42FE-9831-A21B726F2C57}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{09AA4D0A-D68E-4DC4-A7D6-7CB906ECB4CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09AA4D0A-D68E-4DC4-A7D6-7CB906ECB4CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09AA4D0A-D68E-4DC4-A7D6-7CB906ECB4CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09AA4D0A-D68E-4DC4-A7D6-7CB906ECB4CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CE197FF-1912-420C-9380-437F3394AEDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CE197FF-1912-420C-9380-437F3394AEDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CE197FF-1912-420C-9380-437F3394AEDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CE197FF-1912-420C-9380-437F3394AEDE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61CFA9EF-6EF6-4EEE-B18A-1993D4808873}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61CFA9EF-6EF6-4EEE-B18A-1993D4808873}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61CFA9EF-6EF6-4EEE-B18A-1993D4808873}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61CFA9EF-6EF6-4EEE-B18A-1993D4808873}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AF2545B-307C-4A93-B915-9818DCFA0D2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AF2545B-307C-4A93-B915-9818DCFA0D2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AF2545B-307C-4A93-B915-9818DCFA0D2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AF2545B-307C-4A93-B915-9818DCFA0D2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F29BD994-AF4B-4DB2-BD9E-64E65BF7F0E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F29BD994-AF4B-4DB2-BD9E-64E65BF7F0E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F29BD994-AF4B-4DB2-BD9E-64E65BF7F0E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F29BD994-AF4B-4DB2-BD9E-64E65BF7F0E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{058FDE16-5CC5-42FE-9831-A21B726F2C57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{058FDE16-5CC5-42FE-9831-A21B726F2C57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{058FDE16-5CC5-42FE-9831-A21B726F2C57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{058FDE16-5CC5-42FE-9831-A21B726F2C57}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A3FF6FB0-04A2-40A7-92CB-D1ED56BDC269}
+	EndGlobalSection
+EndGlobal

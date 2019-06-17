@@ -1,0 +1,1 @@
+docker build  --rm -f "Dockerfile.amd64" -t azureaivideo/aivideoshared:0.0.3 .
