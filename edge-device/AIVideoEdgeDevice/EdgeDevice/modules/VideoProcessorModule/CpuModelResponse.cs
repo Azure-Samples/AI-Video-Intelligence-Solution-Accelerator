@@ -2,7 +2,7 @@
 namespace VideoProcessorModule
 {
     #pragma warning disable CS0649
-    internal class ModelResponse
+    internal class CpuModelResponse
     {
         public bool IsEmpty
         {

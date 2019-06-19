@@ -17,14 +17,11 @@ namespace VideoProcessorModule
 
     class Program
     {
-        /// <summary>
-        /// Specifies how often to do a file upload even if there is no recognition
-        /// </summary>
-        private static int s_uploadThreshold = 5;
         private static ModuleClient s_moduleClient = null;
         private static GrpcServer s_grpcServer = null;
         private static BlobStorageHelper s_blobHelper = null;
         private readonly static Object s_twinUpdateLocker = new Object();
+        private static IProcessImage s_currentModel = new CpuModel();
 
         static void Main(string[] args)
         {
@@ -97,11 +94,17 @@ namespace VideoProcessorModule
 
                     if (desiredProperties.Contains("uploadThreshold"))
                     {
-                        int threshold = desiredProperties["uploadThreshold"];
-                        if (threshold < 0)
-                            threshold = 0;
-                        Console.WriteLine($"Setting uploadThreshold threshold to {threshold}");
-                        s_uploadThreshold = threshold;
+                        UploadThreshold.Threshold = desiredProperties["uploadThreshold"];
+                        Console.WriteLine($"Setting uploadThreshold threshold to {UploadThreshold.Threshold}");
+                    }
+
+                    bool useFPGA = desiredProperties.Contains("useFPGA") && desiredProperties["useFPGA"] == true;
+                    bool isModelChangeRequested = useFPGA ^ (s_currentModel.ProcessorType == FpgaModel.FpgaModelProcessorType);
+                    if (isModelChangeRequested)
+                    {
+                        Console.WriteLine($"Switching to {(useFPGA ? FpgaModel.FpgaModelProcessorType : CpuModel.CpuModelProcessorType)} model.");
+                        s_currentModel.Disconnect();
+                        s_currentModel = useFPGA ? (IProcessImage)new FpgaModel("VideoProcessorModule") : new CpuModel();
                     }
 
                     if (desiredProperties.Contains("blobStorageSasUrl"))
@@ -140,9 +143,6 @@ namespace VideoProcessorModule
         /// </summary>
         private static void ProcessingLoop()
         {
-            int forceCounter = s_uploadThreshold;
-            bool force = false;
-
             while (true)
             {
                 lock (s_twinUpdateLocker)
@@ -150,46 +150,12 @@ namespace VideoProcessorModule
                     ImageBody found = InputBuffer.GetNext();
                     while (found != null)
                     {
-                        Console.WriteLine($"Processing image from {found.CameraId}   {found.Time}");
-                        bool uploaded = ProcessImage(found, force);
-
-                        if (uploaded)
-                        {
-                            forceCounter = s_uploadThreshold;
-                            force = false;
-                        }
-                        else
-                        {
-                            if (s_uploadThreshold > 0)
-                                force = (--forceCounter == 0);
-                        }
+                        ImageProcessor.Process(s_blobHelper, s_moduleClient, s_currentModel, found);
 
                         found = InputBuffer.GetNext();
                     }
                 }
                 Task.Delay(1000).Wait();
-            }
-        }
-
-        /// <summary>
-        /// This call is made from within a Task, so there is no need to make it async
-        /// </summary>
-        /// <param name="body"></param>
-        private static bool ProcessImage(ImageBody body, bool force)
-        {
-            try
-            {
-                Console.WriteLine($"Received a {body.Image.Length} byte image plus a {body.SmallImage.Length} 300x300 png.");
-
-                var processor = new ImageProcessor(s_blobHelper, s_moduleClient);
-
-                return processor.Process(body, force);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed handling received image from {body.CameraId} at {body.Time}");
-                Console.WriteLine(ex);
-                return false;
             }
         }
     }

@@ -14,6 +14,10 @@
     <EmbeddedResource Remove="shared-libs\**" />
     <None Remove="shared-libs\**" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="fpga.proto" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectCapability Include="AzureIoTEdgeModule" />
@@ -22,6 +26,10 @@
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.7.0" />
     <PackageReference Include="Grpc" Version="1.20.0" />
+    <PackageReference Include="Grpc.Tools" Version="1.21.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.*" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="2.1.1" />
@@ -36,5 +44,9 @@
   <ItemGroup>
     <ProjectReference Include="shared-libs\BlobStorage\BlobStorage.csproj" />
     <ProjectReference Include="shared-libs\VideoProcessorGrpc\VideoProcessorGrpc.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="fpga.proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>

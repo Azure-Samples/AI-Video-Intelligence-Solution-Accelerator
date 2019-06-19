@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 
 using BlobStorage;
 using VideoProcessorGrpc;
+using System.Collections.Generic;
 
 namespace VideoProcessorModule
 {
@@ -20,46 +21,23 @@ namespace VideoProcessorModule
     /// </summary>
     internal class ImageProcessor
     {
-        #region Instance data
-        private ModuleClient moduleClient;
-        private BlobStorageHelper blobHelper;
-        private ImageBody body;
-        private ModelResponse recognition;
-        int numRecognitionMessages = 0;
-        private TimeSpan recognitionDuration = new TimeSpan(0);
-        private TimeSpan uploadDuration = new TimeSpan(0);
-        private TimeSpan imageToJsonDuration = new TimeSpan(0);
-        private TimeSpan recognitionMessageDuration = new TimeSpan(0);
-        private TimeSpan totalDuration = new TimeSpan(0);
+        private readonly ModuleClient moduleClient;
+        private readonly BlobStorageHelper blobHelper;
+        private readonly ImageBody body;
+        private readonly string processorType;
+        private List<ImageFeature> features;
+        private TimeSpan recognitionDuration;
 
-        #endregion Instance data
+        private static readonly Object reportLock = new object();
 
-        #region Properties
-        /// <summary>
-        /// Return true if the ML module recognized anything.
-        /// </summary>
-        private bool IsRecognized
-        {
-            get { return recognition != null && !recognition.IsEmpty; }
-        }
-        #endregion Properties
-
-        #region Construction
-        /// <summary>
-        /// Construct an ImageProcess object.
-        /// </summary>
-        /// <param name="blobHelper">
-        /// A BlobStorageHelper object used to upload the image to storage.
-        /// </param>
-        public ImageProcessor(BlobStorageHelper blobHelper, ModuleClient client)
+        private ImageProcessor(BlobStorageHelper blobHelper, ModuleClient client, string processorType, ImageBody body)
         {
             this.moduleClient = client;
             this.blobHelper = blobHelper;
-            this.recognition = null;
+            this.processorType = processorType;
+            this.body = body;
         }
-        #endregion Construction
 
-        #region Public methods
         /// <summary>
         /// Process the image. The image is given to the model ML and if a
         /// valid recognition is found then the image is uploaded to storage.
@@ -68,168 +46,51 @@ namespace VideoProcessorModule
         /// <param name="body">
         /// An ImageBody object containing the image from the camera.
         /// </param>
-        /// <param name="forceUpload">
-        /// Specifies whether an upload should be done even if there was no recognition.
-        /// </param>
-        /// <returns>
-        /// True if the image was uploaded to storage, false otherwise
-        /// </returns>
-        public bool Process(ImageBody body, bool forceUpload)
+        public static void Process(BlobStorageHelper blobHelper, ModuleClient client, IProcessImage imageProc, ImageBody body)
         {
-            bool rv = false;
+            ImageProcessor proc = new ImageProcessor(blobHelper, client, imageProc.ProcessorType, body);
+
+            // Perform and measure elapsed time for the ML model work
             DateTime startTime = DateTime.Now;
+            proc.features = imageProc.Process(body.SmallImage);
+            proc.recognitionDuration = DateTime.Now - startTime;
 
-            this.body = body;
-            recognition = GetModelRecognition();
-
-            if (IsRecognized || forceUpload)
-            {
-                if (recognition != null)
-                    Console.WriteLine($"Result contains {recognition.scores.Length} empty spaces.");
-
-                byte[] imageBytes = body.Image.ToByteArray();
-                DateTime then = DateTime.Now;
-                Task task = blobHelper.UploadBlobAsync(body.CameraId,
-                                                       body.Time,
-                                                       body.Type,
-                                                       imageBytes);
-                task.Wait();
-                uploadDuration = DateTime.Now - then;
-                Console.WriteLine($"Uploaded {imageBytes.LongLength} byte image to storage");
-                SendRecognitionMessages(recognition);
-                SendImageMessage();
-                rv = true;
-            }
-
-            if (!IsRecognized)
-                Console.WriteLine("Image isn't recognized");
-
-            totalDuration = DateTime.Now - startTime;
-            Console.WriteLine($"Image processing took {totalDuration.TotalMilliseconds} ms");
-            Console.WriteLine($"  Conversion of image to JSON took {imageToJsonDuration.TotalMilliseconds} ms");
-            Console.WriteLine($"  Recognition took {recognitionDuration.TotalMilliseconds} ms");
-            if (rv == true) // upload happened
-            {
-                Console.WriteLine($"  Upload took {uploadDuration.TotalMilliseconds} ms");
-                Console.WriteLine($"  Sending {numRecognitionMessages} recognition messages took {recognitionMessageDuration.TotalMilliseconds} ms");
-            }
-
-            return rv;
+            // Loop to the next recognition task without waiting for the report to process
+            Task reportTask = new Task(() => proc.Report());
+            reportTask.Start();
         }
-        #endregion Public methods
 
-        #region Private methods
-        /// <summary>
-        /// Create a string in JSON format containing the representation
-        /// of the image to be sent to the CPU-based model.
-        /// </summary>
-        /// <returns>
-        /// A string containing the JSON representation of the image to be
-        /// processed by the model.
-        /// </returns>
-        private string MakeImageJson()
+        private void Report()
         {
-            DateTime then = DateTime.Now;
-
-            try
+            lock(reportLock)
             {
-                StringBuilder   sb = new StringBuilder("{\"img\": [");
-
-                // Rehydrate the .png file as a Bitmap
-                using (MemoryStream stream = new MemoryStream(body.SmallImage.ToByteArray()))
-                using (Bitmap bitmap = new Bitmap(stream))
+                Console.WriteLine($"Processing took the {processorType} {recognitionDuration.TotalMilliseconds} msec for {body.CameraId}   {body.Time}.");
+                bool doUpload = UploadThreshold.ShouldUpload(body.CameraId, features.Count);
+                if (doUpload)
                 {
-                    int width  = bitmap.Width;
-                    int height = bitmap.Height;
+                    Console.WriteLine($"  Recognized {features.Count} features in {body.SmallImage.Length} byte 300x300 image.");
 
-                    for (int i = 0; i < height; i++)
-                    {
-                        sb.Append('[');
-                        for (int j = 0; j < width; j++)
-                        {
-                            var pixel = bitmap.GetPixel(j, i);
-                            sb.AppendFormat("[{0},{1},{2}]", pixel.R, pixel.G, pixel.B);
-                            if (j < width - 1)
-                                sb.Append(',');
-                        }
+                    byte[] imageBytes = body.Image.ToByteArray();
+                    DateTime uploadDurationStart = DateTime.Now;
+                    Task task = blobHelper.UploadBlobAsync(body.CameraId,
+                                                           body.Time,
+                                                           body.Type,
+                                                           imageBytes);
+                    task.Wait();
+                    TimeSpan blobUploadDuration = DateTime.Now - uploadDurationStart;
+                    Console.WriteLine($"  BLOB upload took {blobUploadDuration.TotalMilliseconds} msec for  {imageBytes.LongLength} bytes");
 
-                        sb.Append(']');
-                        if (i < height - 1)
-                            sb.Append(',');
-                    }
-                    sb.Append("]}");
+                    DateTime messageStart = DateTime.Now;
+                    SendRecognitionMessages();
+                    SendImageMessage();
+                    TimeSpan messagesDuration = DateTime.Now - messageStart;
+                    Console.WriteLine($"  Sending messages took {messagesDuration.TotalMilliseconds} msec");
                 }
-
-                return sb.ToString();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error converting small image to JSON:");
-                Console.WriteLine(ex);
-                return "";
-            }
-            finally
-            {
-                imageToJsonDuration = DateTime.Now - then;
-            }
-        }
-
-        /// <summary>
-        /// Send the image to the model ML and get the response.
-        /// </summary>
-        /// <returns>
-        /// If invoking the model ML succeeds, returns a ModelResponse object
-        /// representing the result of the call. Otherwise returns null.
-        /// </returns>
-        private ModelResponse GetModelRecognition()
-        {
-            string jsonContent = MakeImageJson();
-
-            return InvokeCpuModel(jsonContent);
-        }
-
-        /// <summary>
-        /// Call the CPU-based model for our image
-        /// </summary>
-        /// <param name="jsonContent">
-        /// The JSON representing the image, to be sent to the model.
-        /// </param>
-        /// <returns>
-        /// If the call is successful, returns a ModelResponse object
-        /// representing the result of the call. Otherwise returns null.
-        /// </returns>
-        private ModelResponse InvokeCpuModel(string jsonContent)
-        {
-            const string url = "http://grocerymodel:5001/score";
-
-            try
-            {
-                using (var client = new HttpClient())
+                else
                 {
-                    var content = new StringContent(jsonContent);
-                    content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                    DateTime then = DateTime.Now;
-                    var response = client.PostAsync(url, content).Result;
-                    string text = response.Content.ReadAsStringAsync().Result;
-                    recognitionDuration = DateTime.Now - then;
-
-                    Console.WriteLine($"POST return status code {response.StatusCode}");
-                    Console.WriteLine(text);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        ModelResponse modelResponse = JsonConvert.DeserializeObject<ModelResponse>(text);
-                        return modelResponse;
-                    }
+                    Console.WriteLine($"  No features were recognized in {body.SmallImage.Length} byte 300x300 image. Not uploading to BLOB store.");
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Failure uploading to model.");
-                Console.WriteLine(ex);
-            }
-
-            return null;
         }
 
         private void SendIotHubMessage(string messageJson, string schema)
@@ -243,48 +104,41 @@ namespace VideoProcessorModule
             Task msgTask = moduleClient.SendEventAsync(message);
             msgTask.Wait();
             if (msgTask.IsCompletedSuccessfully)
-                Console.WriteLine("{1}--Sent: {0}", messageJson, DateTime.Now);
+                Console.WriteLine("  {1}--Sent: {0}", messageJson, DateTime.Now);
             else
                 throw new ApplicationException("Failed to send IoT Hub message");
         }
 
         /// <summary>
-        /// Send recognition messages to the hub, one for each space recognized.
+        /// Send recognition messages to the hub, one for each feature recognized.
         /// </summary>
-        /// <param name="recognition"></param>
-        private void SendRecognitionMessages(ModelResponse recognition)
+        private void SendRecognitionMessages()
         {
             const string schema = "recognition:v1";
 
-            if (recognition != null)
+            foreach (ImageFeature feature in this.features)
             {
-                DateTime then = DateTime.Now;
-                for (int i=0; i < recognition.classes.Length; i++)
+                try
                 {
-                    try
+                    var telemetryDataPoint = new
                     {
-                        var telemetryDataPoint = new
-                        {
-                            cameraId = body.CameraId,
-                            time = body.Time,
-                            cls = recognition.classes[i],
-                            score = recognition.scores[i],
-                            bbymin = recognition.bboxes[i][0],
-                            bbxmin = recognition.bboxes[i][1],
-                            bbymax = recognition.bboxes[i][2],
-                            bbxmax = recognition.bboxes[i][3]
-                        };
-                        var messageJson = JsonConvert.SerializeObject(telemetryDataPoint);
+                        cameraId = body.CameraId,
+                        time = body.Time,
+                        cls = feature.FeatureClass,
+                        score = feature.Score,
+                        bbymin = feature.BbYMin,
+                        bbxmin = feature.BbXMin,
+                        bbymax = feature.BbYMax,
+                        bbxmax = feature.BbXMax
+                    };
+                    var messageJson = JsonConvert.SerializeObject(telemetryDataPoint);
 
-                        SendIotHubMessage(messageJson, schema);
-                        ++numRecognitionMessages;
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
+                    SendIotHubMessage(messageJson, schema);
                 }
-                recognitionMessageDuration = DateTime.Now - then;
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
 
@@ -293,15 +147,14 @@ namespace VideoProcessorModule
             const string schema = "image-upload:v1";
 
             var telemetryDataPoint = new
-                {
-                    cameraId = body.CameraId,
-                    time = body.Time,
-                    type = body.Type
-                };
+            {
+                cameraId = body.CameraId,
+                time = body.Time,
+                type = body.Type
+            };
             var messageJson = JsonConvert.SerializeObject(telemetryDataPoint);
 
             SendIotHubMessage(messageJson, schema);
         }
-        #endregion Private methods
     }
 }
