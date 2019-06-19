@@ -86,6 +86,16 @@
               "image": "${MODULES.CameraModule}",
               "createOptions": {}
             }
+          },
+          "ProcessorFPGA": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.ProcessorFPGA}",
+              "createOptions": {}
+            }
           }
         }
       }
@@ -94,7 +104,8 @@
       "properties.desired": {
         "schemaVersion": "1.0",
         "routes": {
-          "VideoProcessorModuleToIoTHub": "FROM /* INTO $upstream"
+          "VideoProcessorModuleToIoTHub": "FROM /* INTO $upstream",
+          "ProcessorFPGAToIoTHub": "FROM /messages/modules/ProcessorFPGA/outputs/* INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
