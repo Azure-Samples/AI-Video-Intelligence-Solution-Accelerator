@@ -25,16 +25,15 @@ try:
 except ImportError:
     raise ImportError("azureml-brainwave requires tensorflow version >= 1.6 and you don't have it "
                       "installed.")
+print("Client module: imports complete")
 
 
 
 class PredictionClient:
     """Scoring client for AzureML accelerated models."""
 
-    #def __init__(self, address: str, port: int=None, use_ssl: bool=False, access_token: str=None,
-    #             service_name: str=None, channel_shutdown_timeout: timedelta=timedelta(minutes=2)):
-    def __init__(self, address, port=None, use_ssl=False, access_token=None,
-                 service_name=None, channel_shutdown_timeout=timedelta(minutes=2)):
+    def __init__(self, address: str, port: int = None, use_ssl: bool = False, access_token: str = None,
+                 service_name: str = None, channel_shutdown_timeout: timedelta = timedelta(minutes=2)):
         """Create a prediction client.
 
         :param address: Host name of the service.
@@ -72,8 +71,7 @@ class PredictionClient:
         self.__channel_usable_until = None
         self.__channel = None
 
-    #def score_file(self, path: str, input_name = 'images', outputs = None, timeout: float = 10.0):
-    def score_file(self, path, input_name='images', outputs=None, timeout=10.0):
+    def score_file(self, path: str, input_name = 'images', outputs = None, timeout: float = 10.0):
         """Score a single image file by passing file bytes as string tensor.
 
         :param input_name: Input name to send the tensor with
@@ -86,10 +84,10 @@ class PredictionClient:
             data = f.read()
             input_map = {input_name:(data, [1], types_pb2.DT_STRING)}
             result = self.score_tensors(input_map, outputs, timeout)
-            
+
             # result is a batch, but the API only allows a single image so we return the
             # single item of the batch here
-            if isinstance(result, list):            
+            if isinstance(result, list):
                 for ndarray in result:
                     ndarray = ndarray[0]
             else:
@@ -97,8 +95,7 @@ class PredictionClient:
 
             return result
 
-    #def score_string(self, input_string: str, input_name = 'images', outputs = None, timeout: float = 10.0):
-    def score_string(self, input_string, input_name='images', outputs=None, timeout=10.0):
+    def score_string(self, input_string: str, input_name = 'images', outputs = None, timeout: float = 10.0):
         """Score a single image file by passing file bytes as string tensor.
 
         :param input_name: Input name to send the tensor with
@@ -110,10 +107,10 @@ class PredictionClient:
         data = input_string
         input_map = {input_name:(data, [1], types_pb2.DT_STRING)}
         result = self.score_tensors(input_map, outputs, timeout)
-        
+
         # result is a batch, but the API only allows a single image so we return the
         # single item of the batch here
-        if isinstance(result, list):            
+        if isinstance(result, list):
             for ndarray in result:
                 ndarray = ndarray[0]
         else:
@@ -121,7 +118,7 @@ class PredictionClient:
 
         return result
 
-    def score_numpy_arrays(self, input_map, outputs=None):
+    def score_numpy_arrays(self, input_map, outputs = None):
         """Score a numpy array.
 
         :param input_map: Dictionary of tensor names to numpy arrays to feed for scoring
@@ -133,17 +130,17 @@ class PredictionClient:
         for input_name in input_map:
             npdata = input_map[input_name]
             request.inputs[input_name].CopyFrom(tf.contrib.util.make_tensor_proto(npdata, None, npdata.shape))
-        return self.__predict(request, 30.0, outputs)        
+        return self.__predict(request, 30.0, outputs)
 
 
-    def score_tensors(self, input_map, outputs=None, timeout=10.0):
+    def score_tensors(self, input_map, outputs = None, timeout: float = 10.0):
         """Score a tensor.
 
         :param input_map: Dictionary mapping tensor names to feed tuple of (data as bytes, shape as list[int], datatype as TensorFlow types_pb2)
         :param outputs: Either string or list of strings specifying output tensors name to retreive.
         :param timeout: Timeout of the request in seconds
         :return: Numpy array with the predicted values. For outputs a string, a single numpy array. For outputs a list, a list of numpy arrays.
-        """        
+        """
         request = predict_pb2.PredictRequest()
         for input_name in input_map:
             data, shape, datatype = input_map[input_name]
@@ -152,14 +149,14 @@ class PredictionClient:
                 request.inputs[input_name].string_val.append(data)
             else:
                 request.inputs[input_name].tensor_content.append(data)
-                
+
             request.inputs[input_name].dtype = datatype
             request.inputs[input_name].tensor_shape.dim.extend(self._make_dim_list(shape))
-            
+
         return self.__predict(request, timeout, outputs=outputs)
 
     @staticmethod
-    def _make_dim_list(shape):
+    def _make_dim_list(shape: list):
         ret_list = []
         for val in shape:
             dim = tensor_shape_pb2.TensorShapeProto.Dim()
@@ -187,13 +184,13 @@ class PredictionClient:
                 if output_names:
                     # fetch requested as string, directly return tensor requested
                     if isinstance(output_names, str):
-                        return tf.contrib.util.make_ndarray(result.outputs[output_names])                    
+                        return tf.contrib.util.make_ndarray(result.outputs[output_names])
                     key_source = output_names
                 else:
                     # default fetch contains single tensor, directly return
                     if len(result.outputs) == 1:
                         for name in result.outputs:
-                            return tf.contrib.util.make_ndarray(result.outputs[name]) 
+                            return tf.contrib.util.make_ndarray(result.outputs[name])
                     key_source = result.outputs
 
                 # otherwise return as list of numpy arrays instead
