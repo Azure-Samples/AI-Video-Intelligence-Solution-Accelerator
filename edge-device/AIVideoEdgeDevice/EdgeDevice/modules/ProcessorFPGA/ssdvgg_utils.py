@@ -30,7 +30,7 @@ def compute_layer_anchors(img_shape, feat_shape, sizes, ratios, step):
       feat_shape: Feature shape, used for computing relative position grids;
       size: Absolute reference sizes;
       ratios: Ratios to use on these features;
-      step: Layer's step;   
+      step: Layer's step;
     Return:
       y, x, h, w: Relative x and y grids, and height and width.
     """
