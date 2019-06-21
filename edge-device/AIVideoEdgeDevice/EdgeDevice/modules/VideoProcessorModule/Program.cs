@@ -98,13 +98,46 @@ namespace VideoProcessorModule
                         Console.WriteLine($"Setting uploadThreshold threshold to {UploadThreshold.Threshold}");
                     }
 
-                    bool useFPGA = desiredProperties.Contains("useFPGA") && desiredProperties["useFPGA"] == true;
-                    bool isModelChangeRequested = useFPGA ^ (s_currentModel.ProcessorType == FpgaModel.FpgaModelProcessorType);
-                    if (isModelChangeRequested)
+                    string mlModelType = desiredProperties["mlModelType"];
+                    Console.WriteLine($"Model type: {mlModelType}");
+                    // Default to "CPU" on malformed input
+                    switch(mlModelType)
                     {
-                        Console.WriteLine($"Switching to {(useFPGA ? FpgaModel.FpgaModelProcessorType : CpuModel.CpuModelProcessorType)} model.");
-                        s_currentModel.Disconnect();
-                        s_currentModel = useFPGA ? (IProcessImage)new FpgaModel("VideoProcessorModule") : new CpuModel();
+                        // Don't change valid non-"CPU" inputs
+                        case GpuModel.GpuModelProcessorType:
+                        case FpgaModel.FpgaModelProcessorType:
+                        case CpuModel.CpuModelProcessorType:
+                            break;
+                        default:
+                            Console.WriteLine($"Malformed mlModelType: {mlModelType} -- defaulting to 'CPU'");
+                            mlModelType = CpuModel.CpuModelProcessorType;
+                            break;
+                    }
+                    if (mlModelType != s_currentModel.ProcessorType)
+                    {
+                        try
+                        {
+                            s_currentModel.Disconnect();
+                        }
+                        catch(Exception ex)
+                        {
+                            Console.WriteLine($"Error disconnecting {s_currentModel.ProcessorType} model: {ex.Message}");
+                        }
+                        Console.WriteLine($"Switching to {mlModelType} model.");
+                        switch (mlModelType)
+                        {
+                            // Don't change valid non-"CPU" inputs
+                            case GpuModel.GpuModelProcessorType:
+                                s_currentModel = new GpuModel();
+                                break;
+                            case FpgaModel.FpgaModelProcessorType:
+                                s_currentModel = new FpgaModel("processorfpga");
+                                break;
+                            case CpuModel.CpuModelProcessorType:
+                            default:
+                                s_currentModel = new CpuModel();
+                                break;
+                        }
                     }
 
                     if (desiredProperties.Contains("blobStorageSasUrl"))
@@ -150,8 +183,14 @@ namespace VideoProcessorModule
                     ImageBody found = InputBuffer.GetNext();
                     while (found != null)
                     {
-                        ImageProcessor.Process(s_blobHelper, s_moduleClient, s_currentModel, found);
-
+                        try
+                        {
+                            ImageProcessor.Process(s_blobHelper, s_moduleClient, s_currentModel, found);
+                        }
+                        catch(Exception ex)
+                        {
+                            Console.WriteLine($"Error from ImageProcessor.Process: {ex.Message}");
+                        }
                         found = InputBuffer.GetNext();
                     }
                 }
