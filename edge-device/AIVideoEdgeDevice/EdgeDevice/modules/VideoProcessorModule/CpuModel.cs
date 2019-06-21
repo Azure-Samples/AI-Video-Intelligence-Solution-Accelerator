@@ -20,22 +20,23 @@ namespace VideoProcessorModule
 
         public List<ImageFeature> Process(Google.Protobuf.ByteString image)
         {
-            List<ImageFeature> result = new List<ImageFeature>();
             string imageJson = MakeImageJson(image);
             if (imageJson != null)
             {
                 CpuModelResponse response = InvokeCpuModel(imageJson);
                 if (response != null)
                 {
-                    for(int i = 0; i < response.classes.Length; i++)
+                    List<ImageFeature> result = new List<ImageFeature>();
+                    for (int i = 0; i < response.classes.Length; i++)
                     {
                         ImageFeature feature = new ImageFeature(response.classes[i], 
                             response.scores[i], response.bboxes[i]);
                         result.Add(feature);
                     }
+                    return result;
                 }
             }
-            return result;
+            return null;
         }
 
         /// <summary>
