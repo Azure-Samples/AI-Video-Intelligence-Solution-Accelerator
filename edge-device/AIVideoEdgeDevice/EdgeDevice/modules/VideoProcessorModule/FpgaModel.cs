@@ -23,12 +23,17 @@ namespace VideoProcessorModule
 
         public string ProcessorType { get { return FpgaModelProcessorType; } }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns>Null on error</returns>
         public List<ImageFeature> Process(ByteString image)
         {
             bool succeeded = false;
-            List<ImageFeature> result = new List<ImageFeature>();
             try
             {
+                List<ImageFeature> result = new List<ImageFeature>();
                 EnsureConnection();
                 ImageBody body = new ImageBody
                 {
@@ -49,20 +54,20 @@ namespace VideoProcessorModule
                 if (ex.StatusCode == StatusCode.Unavailable)
                 {
                     Console.WriteLine($"Error sending grpc message: Grpc server for FPGA is unavailable");
-                    return result;
+                    return null;
                 }
                 else
                 {
                     Console.WriteLine($"Error sending grpc for FPGA message");
                     Console.WriteLine(ex);
-                    return result;
+                    return null;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error sending grpc for FPGA message");
                 Console.WriteLine(ex);
-                return result;
+                return null;
             }
             finally
             {

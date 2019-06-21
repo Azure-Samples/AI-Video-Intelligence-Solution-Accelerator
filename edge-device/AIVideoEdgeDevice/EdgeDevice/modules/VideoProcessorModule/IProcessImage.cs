@@ -45,7 +45,7 @@ namespace VideoProcessorModule
         /// Process the 300x300 input image
         /// </summary>
         /// <param name="image"></param>
-        /// <returns>A non-null list of ImageFeature</returns>
+        /// <returns>Null on error, otherwise a list of recognized features</returns>
         List<ImageFeature> Process(Google.Protobuf.ByteString image);
 
         string ProcessorType { get; }

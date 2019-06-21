@@ -51,135 +51,95 @@ and be sure to click **Save**
 1. Choose either **Admin** or **Read Only** as appropriate and click **Select**
 1. Finally click **Assign**
 
-## Azure IoT Device Deployment
+## AI Video Edge Device Deployment
 
-The Azure IoT Devices in the AI Video Intelligence Solution Accelerator are connected to 
+In order to see image data
+in the solution web site you'll need to create at least one AI Video Edge Device. 
+AI Video Devices for the AI Video Intelligence Solution Accelerator are connected to 
 real or simulated cameras which collect the images to be processed. 
 
-Real cameras 
-may optionally be added using the simple
-[Camera Server sample application](UsbCamera/readme.md). 
-Because the sample Camera Server app is not secure, it needs to be on the same
-local subnet as the Azure IoT device, which means that that the Azure IoT Device
-you deploy must be local rather than cloud-based in order to use real cameras.
+If you create your AI Video Edge Device locally (rather than as a cloud resource) then
+you may optionally connect it to a USB camera using the simple
+[Camera Server sample application](edge-device/UsbCamera/readme.md).
 
-#### Choose an Azure IoT Device platform
+#### Choose an Azure AI Video Device platform
 The primary platform for Azure IoT Devices in the AI Video Intelligence Solution Accelerator is
-Azure Data Box Edge, but non-Edge computers can also be used. Three common options
-for hosting the Azure IoT Device are shown below. This walkthrough follows the third option, 
-**Deploy to a Linux machine or VM**.
+Azure Data Box Edge, but non-DBE computers can also be used. Four common options
+for hosting the Azure IoT Device are shown below. This walkthrough follows the fourth option, 
+**Deploy to an Azure cloud VM**.
 *  **Deploy to a Data Box Edge:** If you are deploying to a Databox Edge as a device, you will 
 need to connect it to the IoT Hub that was created when you ran the AI Video 
 Intelligence Solution Accelerator. 
     1. Follow the 
        [Data Box Edge instructions](https://docs.microsoft.com/en-us/azure/databox-online/data-box-edge-deploy-configure-compute-advanced) 
        to create a Data Box Edge device that is connected to your IoT Hub. 
+    2. In the Azure Portal, navigate to the DBE device that you just created and 
+       under **Edge Compute** select **Modules**.
     2. Skip down this page to [Populate the Device with the Required Modules](#populate-the-device-with-the-required-modules) to complete the deployment.
 * **Run an Azure IoT Device in VS Code:** 
     1. Using the instructions in 
     [this article](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-vs-code-develop-module),
     set up VS Code and add all the listed prerequisites.
-    2. Navigate to [the Azure IoT Device source code](edge-device/AIVideoEdgeDevice/EdgeDevice)
+    2. Navigate to [the Azure IoT Device source code](edge-device/AIVideoEdgeDevice/EdgeDevice/readme.md)
     and open that folder (which contains the `deployment.template.json` file) in VS Code.
     2. Register a new Azure IoT Edge device from Visual Studio Code using 
     [these instructions](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-register-device-vscode).
     3. [Build and run the solution](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-vs-code-develop-module#build-and-run-container-for-debugging-and-debug-in-attach-mode).
+      The solution will not work correctly the first time you run it, but you must run it once
+      before performing the next step.
     4. Set the various Module Twin properties as described
     below in [Populate the Device with the Required Modules](#populate-the-device-with-the-required-modules).
-* **Deploy to a Linux machine or VM:** Continue this walkthrough to deploy to a Linux machine or VM.
+    Now that the module twin properties are set correctly the solution will run as designed.
+* **Deploy to a local Linux machine:** 
+    1. Perform the [Register a new Edge Device with the IoT Edge Hub](#Register-a-new-Edge-Device-with-the-IoT-Edge-Hub) step just below this section.
+    1. Set up your Linux machine and provide the connection string according to these instructions:
+      [Install the Azure IoT Edge runtime on Linux (x64)](https://docs.microsoft.com/bs-latn-ba/azure/iot-edge/how-to-install-iot-edge-linux).
+    2. Skip down this page to [Populate the Device with the Required Modules](#populate-the-device-with-the-required-modules) to complete the deployment.
+* **Deploy to an Azure cloud VM:** Continue this walkthrough to deploy to an Azure VM.
 
+## Register a new Edge Device with the IoT Edge Hub
+1. In the Azure Portal open the the IoT Hub that was created by the solution accelerator.
+1. Under **Automatic Device Management**, select **IoT Edge**
+1. Near the top of the page, select **Add an IoT Edge device**
+1. Provide a name in the **Device ID** section, then click **Save**. This will create a new 
+   device registration in your IoT Hub.
+1. Click on the new device in the device list and copy the device connection string
+   (primary key) from the device details page. Save this for later use.
+1. Notice the **Modules** list at the bottom of this page. This is where we perform the next step
+    so leave this tab open in your browser.
 
-## Deploy to a Linux machine or VM
-1. **Select your target machine** 
-    1. **A physical Linux machine running Ubuntu 18.04**
-    2. **A Linux VM running on Windows** 
-    3. **A Linux VM in Azure** 
-        1. Open [portal.azure.com](portal.azure.com) 
-        2. Add a new *Ubuntu Server 18.04 LTS* resource to the resource group containing you solution.
-        3. Enable SSH on your new VM.
-        4. Under **Support + Troubleshooting**, click **Reset Password** and assign a password.
-1. **Register a New Edge Device with the IoT Edge Hub**
-   1. In the Azure Portal open the the IoT Hub that was created by the solution accelerator.
-   1. Under **Automatic Device Management**, select **IoT Edge**
-   1. Near the top of the page, select **Add an IoT Edge device**
-   1. Provide a name in the **Device ID** section, then click **Save**. This will create a new device registration in your IoT Hub.
-   1. Click on the new device in the device list and copy the device connection string from the device details page. Save this for later use.
-1. **Configure the Device**
-To be an IoT Edge device, the device must be running the IoT Edge runtime, which must be installed onto the device. For detailed information about installing the software, refer to [https://docs.microsoft.com/en-us/azure/iot-edge/how-to-install-iot-edge-linux](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-install-iot-edge-linux). Following is the basic procedure. These steps are performed on the Linux device, at the command-line.
-```bash
-curl https://packages.microsoft.com/config/ubuntu/18.04/prod.list > ./microsoft-prod.list
-sudo cp ./microsoft-prod.list /etc/apt/sources.list.d/
-curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
-sudo cp ./microsoft.gpg /etc/apt/trusted.gpg.d/
-sudo apt-get update
-sudo apt-get install moby-engine
-sudo apt-get install moby-cli
-sudo apt-get update
-sudo apt-get install iotedge
-```
-To associate this device with the device we registered with the IoT Hub in the portal, we configure the device with a device connection string.
-```bash
-sudo nano /etc/iotedge/config.yaml
-```
-Locate the lines in the configuration file that look like
-
-```yaml
-provisioning:
-  source: "manual"
-  device_connection_string: "<ADD DEVICE CONNECTION STRING HERE>"
-```
-
-Copy the connection string over the placeholder, keeping the quotation marks. If you did not save the connection string earlier, you can retrieve it from the device details page in the portal.
-
-Save the file and exit the editor: `Ctrl+X`, `Y`, `ENTER`
-
-Restart the daemon:
-```bash
-sudo systemctl restart iotedge
-```
-
-#### Verify the installation
-Check the status of the daemon. 
-```bash
-systemctl status iotedge
-sudo iotedge list
-```
-You should see `Active status (running)`. Also check that the expected modules, 
-(video processor, classifier, and camera) are present.  It might take a few minutes 
-after configuring the device for the modules to appear in the list.
-
-#### Some handy commands
-
-To see the output from the video module:
-```bash
-sudo iotedge logs VideoProcessorModule -f --tail 20
-```
-
-To stop IoTEdge:
-```bash
-sudo systemctl stop iotedge
-```
-
-To start IoTEdge:
-```bash
-sudo systemctl start iotedge
-```
-
+## Run the Edge Device on an Azure cloud VM
+1. Open [portal.azure.com](https://portal.azure.com) 
+2. Add a new *Azure IoT Edge on Ubuntu* resource to the resource group containing your solution.
+3. Enter a name for your VM.
+3. Under **Administrator account** select "password" as the Authentication Type.
+4. Under **Inbound port rules** select "SSH".
+3. Click "Review + create".
+6. Wait for the deployment to finish.
+8. Click the "Go to resource" button.
+9. Open the **Run command** option.
+10. Select the **Run shell script** item.
+11. Enter `/etc/iotedge/configedge.sh "{device_connection_string}"`, where
+    `{device_connection_string}` is the connection string you saved in
+    [Register a new Edge Device with the IoT Edge Hub](#register-a-new-edge-device-with-the-iot-edge-hub). This process takes several minutes and gives no feedback until it completes,
+    so be patient.
 
 ## Populate the Device with the Required Modules
-Now we're ready to add our modules: grocerymodel, CameraModule, and VideoProcessorModule. 
 #### Add `grocerymodel`
+1. Return to your browser tab with the device's **Modules** list. Now we're ready to add our 
+  modules: grocerymodel, CameraModule, and VideoProcessorModule.
+1. Select **Set modules** at the top of the page.
 1. In the device details in the Azure Portal, in the lower section of the 
 **Set modules** page, under **Deployment Modules**, click on **Add**.
 1. From the drop-down menu select **IoT Edge Module**. You will be asked for the name and the address of the module being added.
 1. Name the module "grocerymodel".  Note that case matters on the module names.
-1. Use `azureaivideo/grocerymodelquiet:0.0.1` as the module URL.
+1. Use `docker.io/azureaivideo/grocerymodelquiet:0.0.1` as the module URL.
 1. There is no module twin data for this module, so leave the checkbox unchecked.  Click **Save**
 
 #### Add `VideoProcessorModule`
 1. Click **Add** to add another IoT Edge Module. This time we'll add the *videoprocessormodule*, 
 naming it "VideoProcessorModule". Provide the URI of the module as described above. 
-The URI is: `azureaivideo/videoprocessormodule:0.0.24-amd64`
+The URI is: `docker.io/azureaivideo/videoprocessormodule:0.0.24-amd64`
 1. Generate a SAS Url for your container:
     * Go to the storage account
     * Under **Settings**, Select the **Shared Access Signature**
@@ -207,7 +167,7 @@ images will be uploaded.
 1. Click **Add** to add another IoT Edge Module. .
 1. From the drop-down menu select **IoT Edge Module**. You will be asked for the name and the address of the module being added.
 1. Name the module "CameraModule".  Note that case matters on the module names.
-1. Use `azureaivideo/cameramodule:0.0.15-amd64` as the module URL.
+1. Use `docker.io/azureaivideo/cameramodule:0.0.15-amd64` as the module URL.
 1. For the camera module, the module twin must be configured. Click the checkbox for **Set module twin's desired properties**. Each device will have different configuration values for the camera module. Here is an example module twin for a camera module configured for two cameras:
 ```json
 {
@@ -236,3 +196,18 @@ and the `cam02` simulated camera will repeatedly send a single image named `coun
 1. Click **Next** to advance to page 2, **Specify Routes**. There are no required changes here, so 
 2. click **Next** to advance to page 3, **Review Deployment**. 
 3. Click **Submit**.
+4. Return to the **Device Details** page and wait for all of the modules in your device to show
+    a status of "running". This process takes several minutes. One of the transient states 
+    you may see is "back off"; this does not indicate a problem.
+
+
+## View the results
+
+You can now open the web site for your deployment and select one of the cameras from the dropdown.
+Images from your new device should appear in the "Insights from video stream" window.
+
+#### Optional: connect a real camera
+If you deployed your AI Video Device locally, you can connect it to a USB camera using the simple
+[Camera Server sample application](edge-device/UsbCamera/readme.md).
+
+

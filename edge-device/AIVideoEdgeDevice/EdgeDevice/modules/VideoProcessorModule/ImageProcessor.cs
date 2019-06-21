@@ -56,8 +56,11 @@ namespace VideoProcessorModule
             proc.recognitionDuration = DateTime.Now - startTime;
 
             // Loop to the next recognition task without waiting for the report to process
-            Task reportTask = new Task(() => proc.Report());
-            reportTask.Start();
+            if (proc.features != null)
+            {
+                Task reportTask = new Task(() => proc.Report());
+                reportTask.Start();
+            }
         }
 
         private void Report()
