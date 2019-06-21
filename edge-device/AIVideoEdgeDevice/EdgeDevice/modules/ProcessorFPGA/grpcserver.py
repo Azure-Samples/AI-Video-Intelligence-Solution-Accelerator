@@ -25,7 +25,9 @@ tensor_outputs = [
     'ssd_300_vgg/block11_box/Reshape:0'
 ]
 
-client = PredictionClient('10.121.114.46', 50051)
+#client = PredictionClient('10.121.114.46', 50051)
+#client = PredictionClient(os.getenv('ML_MODULE_NAME','fpga-stock-module'), 50051)
+client = PredictionClient("grocerymodelfpga", 50051)
 
 class ImageServicer(fpgagrpc_pb2_grpc.FpgaGrpcChannelServicer):
     """
