@@ -31,8 +31,6 @@ click the settings gear icon in the top right corner, make sure **Simulation Dat
 1. Login to https://portal.azure.com with the same account you used to deploy the CLI
 1. Select the Resource Group to which the Remote Monitoring Template was deployed
 1. Select the Storage Account
-1. Under **Settings**, select **Configuration**
-1. Disable **Secure transfer required** and **Save**
 1. Under **Blob Service**, select **Blobs**
 1. Create a new Container called **still-images**, set **Public access level** to **Private**
 1. After **still-images** is created, click the **...** at the end of its row, select **Access policy**
@@ -106,20 +104,22 @@ Intelligence Solution Accelerator.
 1. Provide a name in the **Device ID** section, then click **Save**. This will create a new 
    device registration in your IoT Hub.
 1. Click on the new device in the device list and copy the device connection string
-   (primary key) from the device details page. Save this for later use.
-1. Notice the **Modules** list at the bottom of this page. This is where we perform the next step
+   (primary key) from the device details page. Save this for later use. (You may have to hit
+    `F5` to see your new device in the list.)
+1. Notice the **Modules** list at the bottom of this page. This is where we perform the next step,
     so leave this tab open in your browser.
 
-## Run the Edge Device on an Azure cloud VM
-1. Open [portal.azure.com](https://portal.azure.com) 
+## Create the Edge Device on an Azure cloud VM
+1. Open [portal.azure.com](https://portal.azure.com) in a new tab.
 2. Add a new *Azure IoT Edge on Ubuntu* resource to the resource group containing your solution.
 3. Enter a name for your VM.
 3. Under **Administrator account** select "password" as the Authentication Type.
 4. Under **Inbound port rules** select "SSH".
 3. Click "Review + create".
+7. After validation passes, click "Create".
 6. Wait for the deployment to finish.
 8. Click the "Go to resource" button.
-9. Open the **Run command** option.
+9. Open the **Run command** option under **Operations**.
 10. Select the **Run shell script** item.
 11. Enter `/etc/iotedge/configedge.sh "{device_connection_string}"`, where
     `{device_connection_string}` is the connection string you saved in
@@ -130,6 +130,8 @@ Intelligence Solution Accelerator.
 #### Add `grocerymodel`
 1. Return to your browser tab with the device's **Modules** list. Now we're ready to add our 
   modules: grocerymodel, CameraModule, and VideoProcessorModule.
+1. Click the "Refresh" button at the top of the page, and you should see that the `$edgeAgent`
+  module is running.
 1. Select **Set modules** at the top of the page.
 1. In the device details in the Azure Portal, in the lower section of the 
 **Set modules** page, under **Deployment Modules**, click on **Add**.
@@ -143,14 +145,15 @@ Intelligence Solution Accelerator.
 naming it "VideoProcessorModule". Provide the URI of the module as described above. 
 The URI is: `docker.io/azureaivideo/videoprocessormodule:0.0.24-amd64`
 1. Generate a SAS Url for your container:
-    * Go to the storage account
+    * Go to the storage account for your solution's resource group.
     * Under **Settings**, Select the **Shared Access Signature**
     * On **Allowed services** select **Blob only**
     * On **Allowed resource types** select **Container + Object**
     * On **Allowed permissions** select **Write + Create**
     * Leave **Start time** as-is
-    * Select some appropriate **End time**
-    * Click the **Generate SAS and connection string** button, use the generated connection string for the contents of blobStorageSasUrl in the next step
+    * Select some appropriate **End time** at least a few months into the future.
+    * Click the **Generate SAS and connection string** button, use the generated Connection String for the contents of blobStorageSasUrl in the next step
+1. Check the *Set module twin's desired properties* checkbox.
 1. Modify the module twin. The module twin should look like
 ```json
 {
@@ -170,7 +173,8 @@ images will be uploaded.
 1. From the drop-down menu select **IoT Edge Module**. You will be asked for the name and the address of the module being added.
 1. Name the module "CameraModule".  Note that case matters on the module names.
 1. Use `docker.io/azureaivideo/cameramodule:0.0.15-amd64` as the module URL.
-1. For the camera module, the module twin must be configured. Click the checkbox for **Set module twin's desired properties**. Each device will have different configuration values for the camera module. Here is an example module twin for a camera module configured for two cameras:
+1. Click the checkbox for *Set module twin's desired properties*. 
+1. Set the module twin values as shown here:
 ```json
 {
   "properties.desired": {
@@ -199,8 +203,10 @@ and the `cam02` simulated camera will repeatedly send a single image named `coun
 2. click **Next** to advance to page 3, **Review Deployment**. 
 3. Click **Submit**.
 4. Return to the **Device Details** page and wait for all of the modules in your device to show
-    a status of "running". This process takes several minutes. One of the transient states 
-    you may see is "back off"; this does not indicate a problem.
+    a status of "running". This process takes up to ten minutes or more. One of the transient states 
+    you may see is "backoff"; this does not indicate a problem. Note that clicking the "Refresh"
+    button puts up a misleading "Are you sure you want to refresh? Your unsaved edits 
+    will be discarded." warning. At this point you have no unsaved edits, so it is safe to refresh.
 
 
 ## View the results
