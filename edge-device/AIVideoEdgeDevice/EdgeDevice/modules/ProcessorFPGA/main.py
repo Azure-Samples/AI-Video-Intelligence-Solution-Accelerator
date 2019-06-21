@@ -37,8 +37,8 @@ def send_confirmation_callback(message, result, user_context):
     print ( "    Total calls confirmed: %d" % SEND_CALLBACKS )
 
 
-# receive_message_callback is invoked when an incoming message arrives on the specified 
-# input queue (in the case of this sample, "input1").  Because this is a filter module, 
+# receive_message_callback is invoked when an incoming message arrives on the specified
+# input queue (in the case of this sample, "input1").  Because this is a filter module,
 # we will forward this message onto the "output1" queue.
 def receive_message_callback(message, hubManager):
     global RECEIVE_CALLBACKS
@@ -65,8 +65,8 @@ class HubManager(object):
 
         # set the time until a message times out
         self.client.set_option("messageTimeout", MESSAGE_TIMEOUT)
-        
-        # sets the callback when a message arrives on "input1" queue.  Messages sent to 
+
+        # sets the callback when a message arrives on "input1" queue.  Messages sent to
         # other inputs or to the default will be silently discarded.
         self.client.set_message_callback("input1", receive_message_callback, self)
 
@@ -83,9 +83,9 @@ def main(protocol):
 
         print ( "Starting the FPGA gRPC module with protocol %s..." % hub_manager.client_protocol )
 
-        server = ImageServicer()
+        server = grpcserver.ImageServicer()
         server.start_server()
-        
+
         while True:
             time.sleep(1)
 
