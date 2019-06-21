@@ -73,8 +73,10 @@ Intelligence Solution Accelerator.
     1. Follow the 
        [Data Box Edge instructions](https://docs.microsoft.com/en-us/azure/databox-online/data-box-edge-deploy-configure-compute-advanced) 
        to create a Data Box Edge device that is connected to your IoT Hub. 
-    2. In the Azure Portal, navigate to the DBE device that you just created and 
-       under **Edge Compute** select **Modules**.
+    2. In the Azure Portal, navigate to your IoT Hub.
+    1. Under **Automatic Device Management**, select **IoT Edge**
+    4. In the devices list, select the device that corresponds to the DBE device you
+        just connected. Its name will be the DBE name with "-edge" appended.
     2. Skip down this page to [Populate the Device with the Required Modules](#populate-the-device-with-the-required-modules) to complete the deployment.
 * **Run an Azure IoT Device in VS Code:** 
     1. Using the instructions in 
