@@ -149,11 +149,16 @@ namespace VideoProcessorModule
         {
             const string schema = "image-upload:v1";
 
+            // Report processing time as milliseconds with one decimal place
+            double reportedMsec = double.Parse(this.recognitionDuration.TotalMilliseconds.ToString("#.#"));
+
             var telemetryDataPoint = new
             {
                 cameraId = body.CameraId,
                 time = body.Time,
-                type = body.Type
+                type = body.Type,
+                procType = this.processorType,
+                procMsec = reportedMsec
             };
             var messageJson = JsonConvert.SerializeObject(telemetryDataPoint);
 
