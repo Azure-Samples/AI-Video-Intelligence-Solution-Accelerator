@@ -1,6 +1,8 @@
 import grpc
-import digestor_pb2
-import digestor_pb2_grpc
+#import digestor_pb2
+#import digestor_pb2_grpc
+import fpgagrpc_pb2
+import fpgagrpc_pb2_grpc
 
 class DigestorClient(object):
     """
@@ -17,14 +19,17 @@ class DigestorClient(object):
         self.channel = grpc.insecure_channel("{}:{}".format(self.host, self.port))
 
         # Bind the client to the server channel
-        self.stub = digestor_pb2_grpc.DigestorStub(self.channel)
+        self.stub = fpgagrpc_pb2_grpc.FpgaGrpcChannelStub(self.channel)
 
     def get_digest(self, message):
         """
         Client function to call the RPC for GetDigest
         """
-        to_digest_message = digestor_pb2.DigestMessage(ToDigest=message)
-        return self.stub.GetDigestor(to_digest_message)
+        #to_digest_message = digestor_pb2.DigestMessage(ToDigest=message)
+        #return self.stub.GetDigestor(to_digest_message)
+        image = bytes()
+        to_digest_message = fpgagrpc_pb2.ImageBody(image=image)
+        return self.stub.SubmitImage(to_digest_message)
 
 if __name__ == "__main__":
     client = DigestorClient()

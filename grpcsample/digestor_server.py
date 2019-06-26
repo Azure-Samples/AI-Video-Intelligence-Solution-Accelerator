@@ -1,48 +1,69 @@
 import grpc
 import time
 import hashlib
-import digestor_pb2
-import digestor_pb2_grpc
+
+#import digestor_pb2
+#import digestor_pb2_grpc
+import fpgagrpc_pb2
+import fpgagrpc_pb2_grpc
+
 from concurrent import futures
 
-class DigestorServicer(digestor_pb2_grpc.DigestorServicer):
+class DigestorServicer(fpgagrpc_pb2_grpc.FpgaGrpcChannelServicer):
     """
     gRPC server for digestor service.
     """
     def __init__(self):
         #self.server_port = 46001
-        self.server_port = 28962
-    
-    def GetDigestor(self, request, context):
+        self.port = 28962
+
+    def SubmitImage(self, request, context):
         """
         Implementation of the RPC GetDigestor declared in the proto file.
         """
+        print("In SubmitImage")
 
         # Get the string from the incoming request
-        to_be_digested = request.ToDigest
+        #to_be_digested = request.ToDigest
 
-        hasher = hashlib.sha256()
-        hasher.update(to_be_digested.encode())
-        digested = hasher.hexdigest()
+        #hasher = hashlib.sha256()
+        #hasher.update(to_be_digested.encode())
+        #digested = hasher.hexdigest()
 
-        print(digested)
+        #print(digested)
 
-        result = {'Digested': digested, 'WasDigested': True}
+        #result = {'Digested': digested, 'WasDigested': True}
 
-        return digestor_pb2.DigestedMessage(**result)
+        #return digestor_pb2.DigestedMessage(**result)
+        rv = fpgagrpc_pb2.ImageReply()
+        try:
+            print("Acquiring image")
+            image = request.image
+            print("Image size is {} bytes".format(len(image)))
+        except Exception as ex:
+            print("Unexpected error:", ex)
+            rv.error = "Unexpected error"
+        print("Returning from SubmitImage")
+        return rv
 
     def start_server(self):
         """
         Start the server and prepare it for servicing incoming connections.
         """
 
-        digestor_server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-        digestor_pb2_grpc.add_DigestorServicer_to_server(DigestorServicer(),
-                                                         digestor_server)
+        #digestor_server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+        #fpgagrpc_pb2_grpc.add_FpgaGrpcChannelServicer_to_server(DigestorServicer(),
+        #                                                 digestor_server)
+        fpgagrpc_pb2_grpc.add_FpgaGrpcChannelServicer_to_server(DigestorServicer(),
+                                                                server)
 
-        digestor_server.add_insecure_port('[::]:{}'.format(self.server_port))
+        #digestor_server.add_insecure_port('[::]:{}'.format(self.server_port))
+        print("add_insecure_port('[::]:{}')".format(self.port))
+        server.add_insecure_port('[::]:{}'.format(self.port))
 
-        digestor_server.start()
+        #digestor_server.start()
+        server.start()
         print("Digestor server running...")
 
         try:
