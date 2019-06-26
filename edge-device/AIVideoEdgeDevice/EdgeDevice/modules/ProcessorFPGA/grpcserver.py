@@ -40,11 +40,14 @@ class ImageServicer(fpgagrpc_pb2_grpc.FpgaGrpcChannelServicer):
         """
         Implementation of the SubmitImage method described in the .proto file.
         """
+        print("In SubmitImage")
         rv = fpgagrpc_pb2.ImageReply()
         try:
+            print("Acquiring image")
             image = request.image
+            print("Image size is {} bytes".format(len(image)))
             img = cv2.imdecode(image, cv2.IMREAD_COLOR)
-            # image is alread sized to 300x300 so we don't need to resize
+            # image is already sized to 300x300 so we don't need to resize
             img = img[:, :, ::-1]
             img = img - (123, 117, 104)
             img = np.asarray(img, dtype=np.float32)
@@ -85,6 +88,7 @@ class ImageServicer(fpgagrpc_pb2_grpc.FpgaGrpcChannelServicer):
         fpgagrpc_pb2_grpc.add_FpgaGrpcChannelServicer_to_server(ImageServicer(),
                                                                 server)
 
+        print("add_insecure_port('[::]:{}')".format(self.port))
         server.add_insecure_port('[::]:{}'.format(self.port))
 
         server.start()
