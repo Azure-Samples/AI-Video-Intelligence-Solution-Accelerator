@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package FpgaGrpc;
+
+enum PortNumbers {
+  Unused = 0;
+  VideoProcessorToFpgaPort = 28962;
+}
+
+// FpgaGrpc service definition.
+service FpgaGrpcChannel {
+  // Sends an image
+  rpc SubmitImage (ImageBody) returns (ImageReply) {}
+}
+
+// The request message
+message ImageBody {
+  bytes image = 1;
+}
+
+message BoundingBox {
+  double xMin = 1;
+  double yMin = 2;
+  double xMax = 3;
+  double yMax = 4;
+}
+
+// The response message is null for success, non-null for error
+message ImageReply {
+  string error = 1;
+  repeated int32 classes = 2;
+  repeated double scores = 3;
+  repeated BoundingBox boxes = 4;
+}
