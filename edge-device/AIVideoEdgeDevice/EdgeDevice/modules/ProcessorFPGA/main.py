@@ -9,21 +9,11 @@ import sys
 import grpcserver
 
 
-
 def main():
-    try:
-        print ( "\nPython %s\n" % sys.version )
-
-        print("starting FPGA gRPC server...")
-        server = grpcserver.ImageServicer()
-        server.start_server()
-        print("server started.")
-
-        while True:
-            time.sleep(60*60*24)
-
-    except KeyboardInterrupt:
-        print ( "IoTHubModuleClient sample stopped" )
+    print("\nPython %s\n" % sys.version)
+    print("starting FPGA gRPC server...")
+    server = grpcserver.ImageServicer()
+    server.serve()
 
 if __name__ == '__main__':
     main()

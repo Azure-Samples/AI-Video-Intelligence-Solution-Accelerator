@@ -1,8 +1,14 @@
+# Copyright (c) Microsoft. All rights reserved.
+# Licensed under the MIT license. See LICENSE file in the project root for
+# full license information.
+
 from concurrent import futures
 import cv2
 import grpc
 import numpy as np
 import time
+
+import traceback
 
 from client import PredictionClient
 import fpgagrpc_pb2
@@ -25,8 +31,6 @@ tensor_outputs = [
     'ssd_300_vgg/block11_box/Reshape:0'
 ]
 
-#client = PredictionClient('10.121.114.46', 50051)
-#client = PredictionClient(os.getenv('ML_MODULE_NAME','fpga-stock-module'), 50051)
 client = PredictionClient("grocerymodelfpga", 50051)
 
 class ImageServicer(fpgagrpc_pb2_grpc.FpgaGrpcChannelServicer):
@@ -35,6 +39,7 @@ class ImageServicer(fpgagrpc_pb2_grpc.FpgaGrpcChannelServicer):
     """
     def __init__(self):
         self.port = fpgagrpc_pb2.VideoProcessorToFpgaPort
+        self.server_port = 28962
 
     def SubmitImage(self, request, context):
         """
@@ -42,18 +47,41 @@ class ImageServicer(fpgagrpc_pb2_grpc.FpgaGrpcChannelServicer):
         """
         print("In SubmitImage")
         rv = fpgagrpc_pb2.ImageReply()
+        print("Created ImageReply for return value.")
+        rv.error = ''
+        print("Set reply's error to empty string.")
         try:
             print("Acquiring image")
             image = request.image
             print("Image size is {} bytes".format(len(image)))
-            img = cv2.imdecode(image, cv2.IMREAD_COLOR)
+
+            #!!!Temporary code, to get a return value without calling FPGA
+            #for i in range(2):
+            #    rv.classes.append(1)
+            #    rv.scores.append(float(i))
+            #    b = fpgagrpc_pb2.BoundingBox()
+            #    b.xMin = 42.0
+            #    b.xMax = 87.9
+            #    b.yMin = 1.3
+            #    b.yMax = 0.7
+            #    rv.boxes.append(b)
+            #rv.error = ''
+            #print("returning from SubmitImage with simulated data.")
+            #return rv
+
+            #img = cv2.imdecode(image, cv2.IMREAD_COLOR)
+            arr = np.asarray(bytearray(image), dtype=np.uint8)
+            img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             # image is already sized to 300x300 so we don't need to resize
             img = img[:, :, ::-1]
             img = img - (123, 117, 104)
             img = np.asarray(img, dtype=np.float32)
             img = np.expand_dims(img, axis=0)
+            print("Scoring image")
             result = client.score_numpy_arrays({'brainwave_ssd_vgg_1_Version_0.1_input_1:0':img},
                                                outputs=tensor_outputs)
+            print("Post-processing scores")
             classes, scores, bboxes = ssdvgg_utils.postprocess(result, select_threshold=0.5)
             processed_results = {}
             processed_results["classes"] = classes.tolist()
@@ -61,26 +89,31 @@ class ImageServicer(fpgagrpc_pb2_grpc.FpgaGrpcChannelServicer):
             processed_results["bboxes"] = bboxes.tolist()
             print(processed_results)
 
+            print("Building reply")
             # Put results into ImageReply object
-            rv.classes = classes.tolist()
-            rv.scores = scores.tolist()
-            boxes = []
+            print("Adding classes...")
+            for item in classes.tolist():
+                rv.classes.append(item)
+            print("Adding scores...")
+            for item in scores.tolist():
+                rv.scores.append(item)
+            print("Adding bounding boxes...")
             for bb in bboxes.tolist():
                 bbox = fpgagrpc_pb2.BoundingBox()
                 bbox.yMin = bb[0]
                 bbox.xMin = bb[1]
                 bbox.yMax = bb[2]
                 bbox.xMax = bb[3]
-                boxes.append(bbox)
-            rv.boxes = boxes
-            rv.error = None
+                rv.boxes.append(bbox)
         except Exception as ex:
             print("Unexpected error:", ex)
+            traceback.print_exc()
             rv.error = "Unexpected error"
 
+        print("Returning from SubmitImage")
         return rv
 
-    def start_server(self):
+    def serve(self):
         """
         Start the server and prepare it for servicing incoming connections.
         """
@@ -88,8 +121,15 @@ class ImageServicer(fpgagrpc_pb2_grpc.FpgaGrpcChannelServicer):
         fpgagrpc_pb2_grpc.add_FpgaGrpcChannelServicer_to_server(ImageServicer(),
                                                                 server)
 
-        print("add_insecure_port('[::]:{}')".format(self.port))
+        print("using port {}')".format(self.port))
         server.add_insecure_port('[::]:{}'.format(self.port))
 
         server.start()
         print("FPGA GRPC server started.")
+
+        try:
+            while True:
+                time.sleep(60*60*24)
+
+        except KeyboardInterrupt:
+            print ( "FPGA GRPC server stopped" )
