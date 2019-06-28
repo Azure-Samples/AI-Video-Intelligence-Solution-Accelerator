@@ -86,6 +86,16 @@
               "image": "${MODULES.CameraModule}",
               "createOptions": {}
             }
+          },
+          "ProcessorFPGA": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${MODULES.ProcessorFPGA}",
+              "createOptions": {}
+            }
           }
         }
       }
