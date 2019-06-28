@@ -55,21 +55,6 @@ class ImageServicer(fpgagrpc_pb2_grpc.FpgaGrpcChannelServicer):
             image = request.image
             print("Image size is {} bytes".format(len(image)))
 
-            #!!!Temporary code, to get a return value without calling FPGA
-            #for i in range(2):
-            #    rv.classes.append(1)
-            #    rv.scores.append(float(i))
-            #    b = fpgagrpc_pb2.BoundingBox()
-            #    b.xMin = 42.0
-            #    b.xMax = 87.9
-            #    b.yMin = 1.3
-            #    b.yMax = 0.7
-            #    rv.boxes.append(b)
-            #rv.error = ''
-            #print("returning from SubmitImage with simulated data.")
-            #return rv
-
-            #img = cv2.imdecode(image, cv2.IMREAD_COLOR)
             arr = np.asarray(bytearray(image), dtype=np.uint8)
             img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -108,7 +93,7 @@ class ImageServicer(fpgagrpc_pb2_grpc.FpgaGrpcChannelServicer):
         except Exception as ex:
             print("Unexpected error:", ex)
             traceback.print_exc()
-            rv.error = "Unexpected error"
+            rv.error = "Unexpected error: {}".format(ex)
 
         print("Returning from SubmitImage")
         return rv
