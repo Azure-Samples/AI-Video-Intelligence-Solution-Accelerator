@@ -13,9 +13,18 @@ service GrpcChannel {
   rpc RequestImage (ImageRequest) returns (ImageReply) {}
 }
 
+// Specify image cropping behavior
+message ImageCropPercents {
+  float hOffset = 1;
+  float vOffset = 2;
+  float width = 3;
+  float height = 4;
+}
+
 // The request message
 message ImageRequest {
   string cameraHardwareId = 1;
+  ImageCropPercents imageCropPercents = 2;
 }
 
 // Error is an empty string for success

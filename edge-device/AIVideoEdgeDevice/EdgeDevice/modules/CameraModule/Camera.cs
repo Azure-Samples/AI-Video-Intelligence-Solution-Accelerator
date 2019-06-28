@@ -21,6 +21,8 @@ namespace CameraModule
 
         public string PortType { get; private set; }
 
+        public ImageCrop ImageCrop { get; private set; }
+
         private IImageSource ImageSource { get; set; }
 
         /// <summary>
@@ -72,9 +74,17 @@ namespace CameraModule
         /// <remarks>This really should take a delegate to provide image notification.</remarks>
         private Camera(JObject camera)
         {
-            CameraId = (string)camera["id"];
-            Port = (string)camera["port"];
-            PortType = (string)camera["type"];
+            try
+            {
+                CameraId = (string)camera["id"];
+                Port = (string)camera["port"];
+                PortType = (string)camera["type"];
+                ImageCrop = new ImageCrop((JObject)camera["imageCropPercents"]);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Invalid camera definition in module twin: {camera.ToString()}, {ex.Message}");
+            }
         }
 
         /// <summary>
