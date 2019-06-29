@@ -5,10 +5,6 @@ VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoProcessorModule", "EdgeDevice\modules\VideoProcessorModule\VideoProcessorModule.csproj", "{093B6C59-CCE5-4728-8C6C-0C62AA6F0E86}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlobStorage", "EdgeDevice\modules\VideoProcessorModule\shared-libs\BlobStorage\BlobStorage.csproj", "{E0F1712A-5C9E-4CDB-BBE1-88A60F1282ED}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VideoProcessorGrpc", "EdgeDevice\modules\VideoProcessorModule\shared-libs\VideoProcessorGrpc\VideoProcessorGrpc.csproj", "{83A13190-092B-4209-B84E-B238E860F654}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,14 +15,6 @@ Global
 		{093B6C59-CCE5-4728-8C6C-0C62AA6F0E86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{093B6C59-CCE5-4728-8C6C-0C62AA6F0E86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{093B6C59-CCE5-4728-8C6C-0C62AA6F0E86}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E0F1712A-5C9E-4CDB-BBE1-88A60F1282ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0F1712A-5C9E-4CDB-BBE1-88A60F1282ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E0F1712A-5C9E-4CDB-BBE1-88A60F1282ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E0F1712A-5C9E-4CDB-BBE1-88A60F1282ED}.Release|Any CPU.Build.0 = Release|Any CPU
-		{83A13190-092B-4209-B84E-B238E860F654}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{83A13190-092B-4209-B84E-B238E860F654}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{83A13190-092B-4209-B84E-B238E860F654}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{83A13190-092B-4209-B84E-B238E860F654}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

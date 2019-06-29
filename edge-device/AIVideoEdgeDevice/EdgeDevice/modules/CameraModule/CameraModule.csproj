@@ -20,6 +20,7 @@
   
   <ItemGroup>
     <None Remove="CameraServer.proto" />
+    <None Remove="VideoProcessorGrpc.proto" />
   </ItemGroup>
 
   <ItemGroup>
@@ -45,11 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="shared-libs\BlobStorage\BlobStorage.csproj" />
-    <ProjectReference Include="shared-libs\VideoProcessorGrpc\VideoProcessorGrpc.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Protobuf Include="CameraServer.proto" GrpcServices="Client" />
+    <Protobuf Include="VideoProcessorGrpc.proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>

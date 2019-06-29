@@ -1,1 +1,0 @@
-docker push azureaivideo/aivideoshared:0.0.3
