@@ -98,7 +98,11 @@ namespace VideoProcessorModule
                         Console.WriteLine($"Setting uploadThreshold threshold to {UploadThreshold.Threshold}");
                     }
 
-                    string mlModelType = desiredProperties["mlModelType"];
+                    string mlModelType = CpuModel.CpuModelProcessorType;
+                    if (desiredProperties.Contains("mlModelType"))
+                    {
+                        mlModelType = desiredProperties["mlModelType"];
+                    }
                     Console.WriteLine($"Model type: {mlModelType}");
                     // Default to "CPU" on malformed input
                     switch(mlModelType)
