@@ -30,30 +30,36 @@ namespace CameraModule
         public static void AddCamera(JObject cameraFromTwin)
         {
             Camera cam = new Camera(cameraFromTwin);
-            // Ensure uniqueness
-            foreach(Camera test in s_cameras)
+            // Ensure uniqueness for real enabled cameras
+            if (cam.PortType != "disabled" && cam.PortType != "simulator")
             {
-                if (cam.CameraId == test.CameraId)
+                foreach(Camera test in s_cameras)
                 {
-                    throw new ApplicationException("Camera Ids must be unique among all Edge Devices");
-                }
-                if (cam.PortType == test.PortType && cam.Port == test.Port)
-                {
-                    throw new ApplicationException("Camera port definitions (Port and Type) must be unique within an Edge Device");
+                    if (cam.CameraId == test.CameraId)
+                    {
+                        throw new ApplicationException("Camera Ids must be unique among all Edge Devices");
+                    }
+                    if (cam.PortType == test.PortType && cam.Port == test.Port)
+                    {
+                        throw new ApplicationException("Camera port definitions (Port and Type) must be unique within an Edge Device");
+                    }
                 }
             }
             
             switch (cam.PortType)
             {
                 case "simulator": cam.ImageSource = new Simulator(cam.Port);
+                    s_cameras.Add(cam);
                     break;
                 case "CameraServer": cam.ImageSource = new CameraServerClient(cam.Port);
+                    s_cameras.Add(cam);
+                    break;
+                case "disabled":
                     break;
                 default:
                     throw new ApplicationException("Unknown camera hardware type");
             }
 
-            s_cameras.Add(cam);
         }
 
         public static void DisconnectAll()

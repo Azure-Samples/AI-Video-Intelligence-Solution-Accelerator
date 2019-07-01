@@ -75,19 +75,29 @@ namespace VideoProcessorModule
 
                     byte[] imageBytes = body.Image.ToByteArray();
                     DateTime uploadDurationStart = DateTime.Now;
-                    Task task = blobHelper.UploadBlobAsync(body.CameraId,
-                                                           body.Time,
-                                                           body.Type,
-                                                           imageBytes);
-                    task.Wait();
-                    TimeSpan blobUploadDuration = DateTime.Now - uploadDurationStart;
-                    Console.WriteLine($"  BLOB upload took {blobUploadDuration.TotalMilliseconds} msec for  {imageBytes.LongLength} bytes");
+                    string verb = "upload image to BLOB store";
+                    try
+                    {
+                        Task task = blobHelper.UploadBlobAsync(body.CameraId,
+                                                            body.Time,
+                                                            body.Type,
+                                                            imageBytes);
+                        task.Wait();
 
-                    DateTime messageStart = DateTime.Now;
-                    SendRecognitionMessages();
-                    SendImageMessage();
-                    TimeSpan messagesDuration = DateTime.Now - messageStart;
-                    Console.WriteLine($"  Sending messages took {messagesDuration.TotalMilliseconds} msec");
+                        TimeSpan blobUploadDuration = DateTime.Now - uploadDurationStart;
+                        Console.WriteLine($"  BLOB upload took {blobUploadDuration.TotalMilliseconds} msec for  {imageBytes.LongLength} bytes");
+
+                        DateTime messageStart = DateTime.Now;
+                        verb = "send messages to IoT Hub";
+                        SendRecognitionMessages();
+                        SendImageMessage();
+                        TimeSpan messagesDuration = DateTime.Now - messageStart;
+                        Console.WriteLine($"  Sending messages took {messagesDuration.TotalMilliseconds} msec");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"  Failed to {verb}: {ex.Message}");
+                    }
                 }
                 else
                 {
