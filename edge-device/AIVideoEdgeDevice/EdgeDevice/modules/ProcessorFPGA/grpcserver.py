@@ -57,9 +57,8 @@ class ImageServicer(fpgagrpc_pb2_grpc.FpgaGrpcChannelServicer):
 
             arr = np.asarray(bytearray(image), dtype=np.uint8)
             img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             # image is already sized to 300x300 so we don't need to resize
-            img = img[:, :, ::-1]
+            img = img[:, :, ::-1]       # reorder BGR to RGB
             img = img - (123, 117, 104)
             img = np.asarray(img, dtype=np.float32)
             img = np.expand_dims(img, axis=0)
