@@ -81,6 +81,7 @@ namespace CameraModule
             twinTask.Wait();
             Twin twin = twinTask.Result;
             OnDesiredPropertiesUpdate(twin.Properties.Desired, null);
+            s_moduleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesUpdate, null);
 
             Console.WriteLine("IoT Hub module client initialized.");
         }
