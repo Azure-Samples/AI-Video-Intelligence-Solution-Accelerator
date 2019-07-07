@@ -167,6 +167,7 @@ namespace VideoProcessorModule
                 cameraId = body.CameraId,
                 time = body.Time,
                 type = body.Type,
+                featureCount = this.features != null ? this.features.Count : 0,
                 procType = this.processorType,
                 procMsec = reportedMsec
             };
