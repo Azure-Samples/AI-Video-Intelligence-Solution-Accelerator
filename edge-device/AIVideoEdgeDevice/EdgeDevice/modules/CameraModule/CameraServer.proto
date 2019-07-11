@@ -4,7 +4,7 @@ package CameraServer;
 
 enum PortNumbers {
   Unused = 0;
-  CameraServerPort = 28962;
+  CameraServerPort = 28968;
 }
 
 // The CameraServerGrpc service definition.

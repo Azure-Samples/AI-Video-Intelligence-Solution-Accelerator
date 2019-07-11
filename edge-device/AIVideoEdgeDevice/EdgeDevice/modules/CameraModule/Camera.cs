@@ -57,7 +57,7 @@ namespace CameraModule
                 case "disabled":
                     break;
                 default:
-                    throw new ApplicationException("Unknown camera hardware type");
+                    throw new ApplicationException($"Unknown camera hardware type: {cam.PortType}");
             }
 
         }
