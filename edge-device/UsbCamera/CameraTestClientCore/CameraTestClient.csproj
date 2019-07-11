@@ -30,7 +30,7 @@
     <Protobuf Include="..\..\AIVideoEdgeDevice\EdgeDevice\modules\CameraModule\CameraServer.proto">
       <Link>CameraServer.proto</Link>
     </Protobuf>
-    <Protobuf Include="..\..\AIVideoEdgeDevice\shared-libs\VideoProcessorGrpc\VideoProcessorGrpc.proto">
+    <Protobuf Include="..\..\AIVideoEdgeDevice\EdgeDevice\modules\CameraModule\VideoProcessorGrpc.proto">
       <Link>VideoProcessorGrpc.proto</Link>
     </Protobuf>
   </ItemGroup>
