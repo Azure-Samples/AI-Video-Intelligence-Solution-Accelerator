@@ -64,7 +64,7 @@ namespace CameraServer
                 }
 
                 Console.WriteLine("Starting the gRPC server");
-                string hostName = Dns.GetHostName();
+                string hostName = "0.0.0.0";
                 GrpcServer server = new GrpcServer(hostName, OnImageRequestReceived);
                 server.Start();
 
