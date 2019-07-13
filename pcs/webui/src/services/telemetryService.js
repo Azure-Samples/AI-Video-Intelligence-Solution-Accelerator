@@ -107,6 +107,15 @@ export class TelemetryService {
     });
   }
 
+  static getTelemetryByDeviceIdP2M(devices = []) {
+    return TelemetryService.getTelemetryByMessages({
+      from: 'NOW-PT2M',
+      to: 'NOW',
+      order: 'desc',
+      devices
+    });
+  }
+
   static getTelemetryByDeviceIdP15M(devices = []) {
     return TelemetryService.getTelemetryByMessages({
       from: 'NOW-PT15M',

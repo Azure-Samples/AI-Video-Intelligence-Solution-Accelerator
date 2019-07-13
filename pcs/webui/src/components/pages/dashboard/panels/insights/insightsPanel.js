@@ -14,6 +14,7 @@ import { toDiagnosticsModel } from 'services/models';
 import { DeviceListDropdownContainer as DeviceListDropdown } from 'components/shell/deviceListDropdown';
 import {InsightsImage} from './insightsImage';
 import './insightsPanel.scss';
+import { formatTime } from 'utilities';
 
 export class InsightsPanel extends Component {
 
@@ -23,12 +24,20 @@ export class InsightsPanel extends Component {
   }
 
   render() {
-    const { t, error, image, cameras, boundingBoxes } = this.props;
+    const { t, error, cameras, imageReport } = this.props;
+    let image = null;
+    let boundingBoxes = null;
+    let headerTime = "";
+    if (!!imageReport) {
+      image = imageReport.image;
+      headerTime = " " + formatTime(image.data.time);
+      boundingBoxes = imageReport.recognitions;
+    }
 
     return (
       <Panel className="insights-panel-container">
         <PanelHeader>
-          <PanelHeaderLabel>{t('dashboard.panels.insights.header')}</PanelHeaderLabel>
+          <PanelHeaderLabel>{t('dashboard.panels.insights.header') + headerTime}</PanelHeaderLabel>
           <DeviceListDropdown
             selectCameraPrompt={t('dashboard.panels.insights.selectCameraPrompt')}
             cameras={ cameras } />

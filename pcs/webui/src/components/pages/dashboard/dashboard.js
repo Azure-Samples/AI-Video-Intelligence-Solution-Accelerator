@@ -16,7 +16,6 @@ import {
   EventsPanelContainer as EventsPanel,
   InsightsPanelContainer as InsightsPanel,
   RulesPanelContainer as RulesPanel,
-  ExamplePanel,
 } from './panels';
 import {
   ComponentArray,
@@ -34,7 +33,9 @@ const initialState = {
   telemetry: [],
   telemetryIsPending: true,
   telemetryError: null,
-  telemetryImage: null,
+
+  telemetryImageReportCurrent: null,
+  telemetryBlobUrlRetrievalPending: false,
 
   // Analytics data
   analyticsVersion: 0,
@@ -80,7 +81,7 @@ export class Dashboard extends Component {
     // but the mismatch is only in the time zone spec, so it won't break the comparison.
     const oldAgeLimit = moment().subtract(15, 'm').toJSON();
     if (updates.length > 0) {
-      // Remove all of the old messages that are newer than the oldest update message
+        // Remove all of the old messages that are newer than the oldest update message
       const updateTimeLimit = updates[updates.length - 1].time;
       const timeFilteredMessages = messages.filter(
         item => item.time < updateTimeLimit && item.time > oldAgeLimit);
@@ -91,6 +92,56 @@ export class Dashboard extends Component {
     return messages.filter(item => item.time > oldAgeLimit);
   }
 
+  // TSI query results can be up to 30 or 40 seconds out-of-date, which would cause
+  // some images to be skipped. This function ensures that each reported image
+  // gets a chance to be displayed in the order it was reported.
+  // Returns an "imageReport", which is an object containing the image message
+  // and its associated recognition images.
+  getNextImageReportToDisplay = (cameraId, allTelemetry, currentReport) => {
+    const foundReports = [];
+    if (!!allTelemetry && !!cameraId) {
+      const telemetry = allTelemetry.filter(message => message.data.cameraId === cameraId);
+      let i, j;
+      for (i = 0; i < telemetry.length; i++) {
+        const message = telemetry[i];
+        if (message.messageSchema === 'image-upload:v1') {
+          // If this message matches the currentReport, then there's no new report available
+          if (!!currentReport && currentReport.image.data.time >= message.data.time) {
+            break;
+          }
+          // Attempt to find the associated recognition messages
+          const recognitionMessages = [];
+          for (j = 0; j < telemetry.length; j++) {
+            if (telemetry[j].messageSchema === 'recognition:v1' && message.data.time === telemetry[j].data.time) {
+              recognitionMessages.push(telemetry[j]);
+              if (recognitionMessages.length === message.data.featureCount) {
+                break;
+              }
+            }
+          }
+          // Did we find a complete record?
+          if (message.data.featureCount === recognitionMessages.length) {
+            const report = {
+              image: message,
+              recognitions: recognitionMessages
+            };
+            foundReports.push(report);
+            // If there's no currentReport then the report we just pushed
+            // is the latest, which is what we want.
+            if (!currentReport) {
+              console.log("Initial report");
+              break;
+            }
+          }
+        }
+      }
+    }
+    // When there's no currentReport, we're returning the most recent match. Otherwise,
+    // we return the report that comes next in time after the currentReport (if it
+    // exists yet.)
+    return foundReports.length === 0 ? null : foundReports[foundReports.length - 1];
+  }
+
   componentDidMount() {
     // Ensure the rules are loaded
     this.refreshRules();
@@ -98,13 +149,13 @@ export class Dashboard extends Component {
     // Telemetry stream - START
     const onPendingStart = () => this.setState({ telemetryIsPending: true });
 
-    const getTelemetryStream = ({ deviceIds = [] }) => TelemetryService.getTelemetryByDeviceIdP15M(deviceIds)
+    const getTelemetryStream = ({ deviceIds = [] }) => TelemetryService.getTelemetryByDeviceIdP2M(deviceIds)
       .map(response => ({ initial: response }) )
       .merge(
         this.telemetryRefresh$ // Previous request complete
           .delay(Config.telemetryRefreshInterval) // Wait to refresh
           .do(onPendingStart)
-          .flatMap(_ => TelemetryService.getTelemetryByDeviceIdP1M(deviceIds))
+          .flatMap(_ => TelemetryService.getTelemetryByDeviceIdP2M(deviceIds))
           .map(response => ({ update: response }) )
           )
       //.flatMap(transformTelemetryResponse(() => this.state.telemetry))
@@ -239,43 +290,65 @@ export class Dashboard extends Component {
               // On the initial request we just set the local state
               // to the returned array of telemetry messages
               ? telemetryState.telemetry.initial
-              // On the 1Minute updates we merge the existing messages
+              // On the 2 Minute updates replace the local state with the updates
               // with the newer ones.
-              : this.mergeAndTrimTelemetryMessages(
-                  this.state.telemetry, telemetryState.telemetry.update);
-            const imageMessage = telemetry.length > 0
-              ? telemetry.find(x => x.data.hasOwnProperty('cameraId') && x.data.cameraId === this.props.activeCameraId && x.messageSchema === 'image-upload:v1')
-              : null;
-            if (imageMessage) {
-              // ignore poorly formed messages
-              if (imageMessage.data.cameraId && imageMessage.data.time && imageMessage.data.type) {
-                const imageUrl = imageMessage.data.cameraId + "/"
-                  + imageMessage.data.time + "."
-                  + imageMessage.data.type;
-                const getImageUrl = TelemetryService.getBlobAccessUrl(imageUrl);
-                getImageUrl.subscribe(
-                  (result) => {
-                    const newImage = {
-                      'url': result,
-                      'cameraId': imageMessage.data.cameraId,
-                      'time': imageMessage.data.time,
-                      'type': imageMessage.data.type
-                    }
-                    this.setState( { telemetryImage: newImage } );
-                    // filter out telemetry messages of schema recognition:v1 with the same camera and time
-                    const boundingBoxes = telemetry.filter(x => x.messageSchema === 'recognition:v1' && x.data.cameraId === imageMessage.data.cameraId && x.data.time === imageMessage.data.time);
-                    this.setState( { telemetryBoundingBoxes: boundingBoxes } );
-                  },
-                  error => {
-                    this.setState( { telemetryImage: null } );
-                    this.setState( { telemetryBoundingBoxes: null } );
+              : telemetryState.telemetry.update;
+
+            // Don't worry about updating when a Blob Url retrieval is pending
+            if (!this.state.telemetryBlobUrlRetrievalPending) {
+              // Ignore the telemetryImageReportCurrent if it doesn't match the current cameraId
+              let currentReport = this.state.telemetryImageReportCurrent;
+              if (!!currentReport && currentReport.image.data.cameraId !== this.props.activeCameraId) {
+                this.setState( { telemetryImageReportCurrent: null} );
+                currentReport = null;
+              }
+              const candidateReport = this.getNextImageReportToDisplay(this.props.activeCameraId, telemetry, currentReport);
+              if (!!candidateReport) {
+                // Always update if there's no current report
+                let doImageUpdate = !currentReport;
+                if (!!currentReport) {
+                  // Display each image for at least a good fraction (80%) of the time between images
+                  // Keep the image dwell time to 10 seconds or less
+                  const imageDwellTimeMilliseconds = Math.min(10000, 0.8 * (Date.parse(candidateReport.image.data.time)
+                    - Date.parse(currentReport.image.data.time)));
+                  // Don't update the current report until the old one has been
+                  // displayed for at least imageDwellTimeMilliseconds
+                  if (Date.now().valueOf() > currentReport.displayStartMsecEpoch + imageDwellTimeMilliseconds) {
+                    doImageUpdate = true;
                   }
-                );
-                          } else {
-                this.setState( { telemetryImage: null } );
-                this.setState( { telemetryBoundingBoxes: null } );
+                }
+                if (doImageUpdate) {
+                  candidateReport.displayStartMsecEpoch = Date.now().valueOf();
+                  this.setState( {
+                    telemetryBlobUrlRetrievalPending: true
+                  } );
+                  const imageUrl = candidateReport.image.data.cameraId + "/"
+                    + candidateReport.image.data.time + "."
+                    + candidateReport.image.data.type;
+                  const getImageUrl = TelemetryService.getBlobAccessUrl(imageUrl);
+                  getImageUrl.subscribe(
+                    (result) => {
+                      candidateReport.image.url = result;
+                      console.log("Setting telemetryImageReportCurrent " + JSON.stringify(candidateReport));
+                      this.setState( {
+                        telemetryImageReportCurrent: candidateReport,
+                        telemetryBlobUrlRetrievalPending: false
+                      } );
+                    },
+                    error => {
+                      console.log("Error fetching Blob access url: " + error);
+                      console.log("Setting telemetryImageReportCurrent " + JSON.stringify(candidateReport));
+                      candidateReport.image.url = null;
+                      this.setState( {
+                        telemetryImageReportCurrent: candidateReport,
+                        telemetryBlobUrlRetrievalPending: false
+                      } );
+                    }
+                  );
+                }
               }
             }
+
             this.setState(
               {
                 telemetry: telemetry,
@@ -361,8 +434,7 @@ export class Dashboard extends Component {
       analyticsError,
 
       telemetry,
-      telemetryImage,
-      telemetryBoundingBoxes,
+      telemetryImageReportCurrent,
 
       lastRefreshed
     } = this.state;
@@ -410,8 +482,7 @@ export class Dashboard extends Component {
                 <Grid>
                   <Cell  className="col-8">
                     <InsightsPanel
-                    image= { telemetryImage }
-                    boundingBoxes= { telemetryBoundingBoxes }
+                    imageReport = { telemetryImageReportCurrent }
                     cameras= { cameraList }
                     error= {rulesError || analyticsError}
                     t={t} />
@@ -432,12 +503,6 @@ export class Dashboard extends Component {
                 t={t}
                 deviceGroups={deviceGroups} />
             </Cell>
-            {
-              Config.showWalkthroughExamples &&
-              <Cell className="col-4">
-                <ExamplePanel t={t} />
-              </Cell>
-            }
           </Grid>
         </PageContent>
       </ComponentArray>

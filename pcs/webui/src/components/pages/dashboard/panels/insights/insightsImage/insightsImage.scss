@@ -3,13 +3,13 @@
   display:inline-block;
   //border: 1px solid red;
   position:relative;
-  width: 100%;
+  height: 100%;
 
   .insights-image {
     //border: 1px solid blue;
     position:absolute;
     z-index:1;
-    width: 100%;
+    height: 100%;
   }
 
   canvas {
@@ -23,7 +23,7 @@
     //border: 1px solid green;
     position:relative;
     z-index:20;
-    width: 100%;
+    height: 100%;
     //border: 1px solid red;
   }
 
