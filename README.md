@@ -128,7 +128,7 @@ Intelligence Solution Accelerator.
 6. Wait for the deployment to finish.
 8. Click the "Go to resource" button.
 9. Open the **Run command** option under **Operations**.
-10. Select the **Run shell script** item.
+10. Select the **RunShellScript** item.
 11. Enter `/etc/iotedge/configedge.sh "{device_connection_string}"`, where
     `{device_connection_string}` is the connection string you saved in
     [Register a new Edge Device with the IoT Edge Hub](#register-a-new-edge-device-with-the-iot-edge-hub). This process takes several minutes and gives no feedback until it completes,
@@ -153,14 +153,17 @@ Intelligence Solution Accelerator.
 naming it "VideoProcessorModule". Provide the URI of the module as described above. 
 The URI is: `docker.io/azureaivideo/videoprocessormodule:0.0.24-amd64`
 1. Generate a SAS Url for your container:
-    * Go to the storage account for your solution's resource group.
+    * Leave the Device tab open, and open a new [portal.azure.com](https://portal.azure.com) 
+        tab in your browser.
+    * Navigate to the storage account for your solution's resource group.
     * Under **Settings**, Select the **Shared Access Signature**
     * On **Allowed services** select **Blob only**
     * On **Allowed resource types** select **Container + Object**
     * On **Allowed permissions** select **Write + Create**
     * Leave **Start time** as-is
     * Select some appropriate **End time** at least a few months into the future.
-    * Click the **Generate SAS and connection string** button, use the generated Connection String for the contents of blobStorageSasUrl in the next step
+    * Click the **Generate SAS and connection string** button, use the generated Connection String for the contents of blobStorageSasUrl in the next step.
+    * Return to the tab in your browser where you're defining the modules.
 1. Check the *Set module twin's desired properties* checkbox.
 1. Modify the module twin. The module twin should look like
 ```json
