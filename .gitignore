@@ -331,3 +331,4 @@ ASALocalRun/
 
 # Re-include the webui packages folder that the NuGet ignores erroneously ignore
 !pcs/webui/src/components/pages/packages/*
+edge-device/AIVideoEdgeDevice/EdgeDevice/.vscode/settings.json

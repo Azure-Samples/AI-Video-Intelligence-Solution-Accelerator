@@ -92,6 +92,12 @@ export class Dashboard extends Component {
     return messages.filter(item => item.time > oldAgeLimit);
   }
 
+  // Early versions of the message schemas ('image-upload;v1') erroneously had ':' as
+  // separators instead of ';' so the preferred full string comparison would fail.
+  matchesSchema = (message, schema) => {
+    return message.messageSchema.startsWith(schema);
+  }
+
   // TSI query results can be up to 30 or 40 seconds out-of-date, which would cause
   // some images to be skipped. This function ensures that each reported image
   // gets a chance to be displayed in the order it was reported.
@@ -104,7 +110,7 @@ export class Dashboard extends Component {
       let i, j;
       for (i = 0; i < telemetry.length; i++) {
         const message = telemetry[i];
-        if (message.messageSchema === 'image-upload:v1') {
+        if (this.matchesSchema(message, 'image-upload')) {
           // If this message matches the currentReport, then there's no new report available
           if (!!currentReport && currentReport.image.data.time >= message.data.time) {
             break;
@@ -112,7 +118,7 @@ export class Dashboard extends Component {
           // Attempt to find the associated recognition messages
           const recognitionMessages = [];
           for (j = 0; j < telemetry.length; j++) {
-            if (telemetry[j].messageSchema === 'recognition:v1' && message.data.time === telemetry[j].data.time) {
+            if (this.matchesSchema(telemetry[j], 'recognition') && message.data.time === telemetry[j].data.time) {
               recognitionMessages.push(telemetry[j]);
               if (recognitionMessages.length === message.data.featureCount) {
                 break;

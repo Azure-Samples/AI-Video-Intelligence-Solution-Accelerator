@@ -8,7 +8,7 @@ namespace VideoProcessorModule
     /// <summary>
     /// ImageFeature defines a feature that ML recognized 
     /// </summary>
-    class ImageFeature
+    public class ImageFeature
     {
         public ImageFeature(int featureClass, double score,
             double bbymin, double bbxmin, double bbymax, double bbxmax)

@@ -45,43 +45,39 @@ class ImageServicer(fpgagrpc_pb2_grpc.FpgaGrpcChannelServicer):
         """
         Implementation of the SubmitImage method described in the .proto file.
         """
-        print("In SubmitImage")
+        print("In SubmitImage v3")
         rv = fpgagrpc_pb2.ImageReply()
-        print("Created ImageReply for return value.")
         rv.error = ''
-        print("Set reply's error to empty string.")
         try:
-            print("Acquiring image")
             image = request.image
-            print("Image size is {} bytes".format(len(image)))
+            print("Received image size is {} bytes".format(len(image)))
 
             arr = np.asarray(bytearray(image), dtype=np.uint8)
             img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+            #img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             # image is already sized to 300x300 so we don't need to resize
-            img = img[:, :, ::-1]       # reorder BGR to RGB
+            #img = img[:, :, ::-1]
             img = img - (123, 117, 104)
             img = np.asarray(img, dtype=np.float32)
             img = np.expand_dims(img, axis=0)
-            print("Scoring image")
+            # Score the image
             result = client.score_numpy_arrays({'brainwave_ssd_vgg_1_Version_0.1_input_1:0':img},
                                                outputs=tensor_outputs)
-            print("Post-processing scores")
             classes, scores, bboxes = ssdvgg_utils.postprocess(result, select_threshold=0.5)
             processed_results = {}
             processed_results["classes"] = classes.tolist()
             processed_results["scores"] = scores.tolist()
             processed_results["bboxes"] = bboxes.tolist()
-            print(processed_results)
+            print("Post-processing classes, scores, bboxes:")
+            print(processed_results["classes"])
+            print(processed_results["scores"])
+            print(processed_results["bboxes"])
 
-            print("Building reply")
             # Put results into ImageReply object
-            print("Adding classes...")
             for item in classes.tolist():
                 rv.classes.append(item)
-            print("Adding scores...")
             for item in scores.tolist():
                 rv.scores.append(item)
-            print("Adding bounding boxes...")
             for bb in bboxes.tolist():
                 bbox = fpgagrpc_pb2.BoundingBox()
                 bbox.yMin = bb[0]
