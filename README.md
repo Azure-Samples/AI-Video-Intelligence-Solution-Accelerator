@@ -45,7 +45,7 @@ click the settings gear icon in the top right corner, make sure **Simulation Dat
 1. Add a policy with the identifier **allowWebUiDirectAccess** and **Read** permissions, click **OK** 
 and be sure to click **Save**
 
-#### To give other users access to the solution website
+#### Give other users access to the solution website
 1. On https://portal.azure.com go to the **Azure Active Directory** resource and select **Enterprise applications**.
 1. Change the selection in the **Application Type** dropdown to **All Applications** and click **Apply**.
 1. Find the deployment you are attempting to administer and select it. Searching by deployment name (e.g. MyDeployment) using the text box right below the **Application Type** dropdown might be helpful.
@@ -56,6 +56,19 @@ and be sure to click **Save**
 1. Back in the **Add Assignment** panel **Select Role**
 1. Choose either **Admin** or **Read Only** as appropriate and click **Select**
 1. Finally click **Assign**
+
+#### Generate a BLOB Storage SAS URL
+1. Open a new [portal.azure.com](https://portal.azure.com) 
+    tab in your browser.
+2. Navigate to the storage account for your solution's resource group.
+3. Under **Settings**, Select the **Shared Access Signature**
+4. On **Allowed services** select **Blob only**
+5. On **Allowed resource types** select **Container + Object**
+1. On **Allowed permissions** select **Write + Create**
+1. Leave **Start time** as-is
+1. Select some appropriate **End time** at least a few months into the future.
+1. Click the **Generate SAS and connection string** button and make note
+	of the generated Connection String for later use.
 
 ## AI Video Edge Device Deployment
 
@@ -152,20 +165,9 @@ Intelligence Solution Accelerator.
 1. Click **Add** to add another IoT Edge Module. This time we'll add the *videoprocessormodule*, 
 naming it "VideoProcessorModule". Provide the URI of the module as described above. 
 The URI is: `docker.io/azureaivideo/videoprocessormodule:0.0.24-amd64`
-1. Generate a SAS Url for your container:
-    * Leave the Device tab open, and open a new [portal.azure.com](https://portal.azure.com) 
-        tab in your browser.
-    * Navigate to the storage account for your solution's resource group.
-    * Under **Settings**, Select the **Shared Access Signature**
-    * On **Allowed services** select **Blob only**
-    * On **Allowed resource types** select **Container + Object**
-    * On **Allowed permissions** select **Write + Create**
-    * Leave **Start time** as-is
-    * Select some appropriate **End time** at least a few months into the future.
-    * Click the **Generate SAS and connection string** button, use the generated Connection String for the contents of blobStorageSasUrl in the next step.
-    * Return to the tab in your browser where you're defining the modules.
 1. Check the *Set module twin's desired properties* checkbox.
-1. Modify the module twin. The module twin should look like
+1. Modify the module twin using the BLOB Storage SAS URL
+	you generated earlier. The module twin should look like
 ```json
 {
   "properties.desired": {
