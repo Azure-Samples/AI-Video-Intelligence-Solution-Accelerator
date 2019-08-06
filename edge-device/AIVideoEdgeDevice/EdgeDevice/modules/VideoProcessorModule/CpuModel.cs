@@ -117,7 +117,6 @@ namespace VideoProcessorModule
                     DateTime then = DateTime.Now;
                     var response = client.PostAsync(url, content).Result;
                     string text = response.Content.ReadAsStringAsync().Result;
-                    // TODO: timing recognitionDuration = DateTime.Now - then;
 
                     Console.WriteLine($"POST return status code {response.StatusCode}");
                     Console.WriteLine(text);

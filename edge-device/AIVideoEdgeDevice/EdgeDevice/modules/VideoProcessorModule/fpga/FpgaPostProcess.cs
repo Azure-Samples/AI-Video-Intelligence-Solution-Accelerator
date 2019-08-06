@@ -51,12 +51,15 @@ namespace FpgaClient
                 networkOutput.Add(ndarray);
             }
 
+            (NDArray classes, NDArray scores, NDArray bboxes) =  
+                ExtractDetections(networkOutput.GetRange(0, 6), networkOutput.GetRange(6, 6), g_ssdAnchors, 
+                    selectThreshold, jaccardThreshold, imageShape: (300, 300), numClasses: 21);
+
             List<ImageFeature> result = new List<ImageFeature>();
-
-            ExtractDetections(networkOutput.GetRange(0, 6), networkOutput.GetRange(6, 6), g_ssdAnchors, 
-                selectThreshold, jaccardThreshold, imageShape: (300, 300), numClasses: 21);
-
-
+            for (int i = 0; i < classes.size; i++)
+            {
+                result.Add(new ImageFeature(classes[i], scores[i], bboxes[i].ToArray<float>()));
+            }
 
             return result;
         }
@@ -275,7 +278,17 @@ namespace FpgaClient
                 var foundArray = found.ToArray();
                 var indices = np.hstack(foundArray);
 
-                var classes = indices[2] + 1;
+                var classes = indices[2];
+                // Bug in NumSharp 0.11.0-alpha2: https://github.com/SciSharp/NumSharp/issues/338
+                if (classes.size == 1)
+                {
+                    classes = classes.copy();
+                    classes[0] = classes[0] + 1;
+                }
+                else
+                {
+                    classes = classes + 1;
+                }
 
                 int foundCount = indices.shape[1];
                 float[] scores = new float[foundCount];

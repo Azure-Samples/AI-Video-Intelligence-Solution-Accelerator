@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using FpgaGrpc;
+//using FpgaGrpc;
 
 namespace VideoProcessorModule
 {
@@ -10,7 +10,7 @@ namespace VideoProcessorModule
     /// </summary>
     public class ImageFeature
     {
-        public ImageFeature(int featureClass, double score,
+        public ImageFeature(int featureClass, float score,
             double bbymin, double bbxmin, double bbymax, double bbxmax)
         {
             FeatureClass = featureClass;
@@ -21,7 +21,7 @@ namespace VideoProcessorModule
             BbXMax = bbxmax;
         }
 
-        public ImageFeature(int featureClass, double score, double[] box)
+        public ImageFeature(int featureClass, float score, float[] box)
         {
             FeatureClass = featureClass;
             Score = score;

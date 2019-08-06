@@ -17,7 +17,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Remove="fpga.proto" />
     <None Remove="VideoProcessorGrpc.proto" />
   </ItemGroup>
 
@@ -39,16 +38,12 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.0.0" />
+    <PackageReference Include="NumSharp" Version="0.11.0-alpha2" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\NumSharp\NumSharp1\src\NumSharp.Core\NumSharp.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="fpga.proto" GrpcServices="Client" />
     <Protobuf Include="VideoProcessorGrpc.proto" GrpcServices="Server" />
   </ItemGroup>
 </Project>

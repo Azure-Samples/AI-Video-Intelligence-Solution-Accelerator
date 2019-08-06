@@ -2,9 +2,9 @@
     "$schema-version": "0.0.1",
     "description": "",
     "image": {
-        "repository": "azureaivideo/videoprocessormodule",
+        "repository": "$CONTAINER_REGISTRY_LOGIN_SERVER/videoprocessormodule",
         "tag": {
-            "version": "0.0.28",
+            "version": "0.0.29",
             "platforms": {
                 "amd64": "./Dockerfile.amd64", 
                 "amd64.debug": "./Dockerfile.amd64.debug"

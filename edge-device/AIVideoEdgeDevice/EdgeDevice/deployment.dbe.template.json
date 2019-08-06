@@ -86,6 +86,43 @@
               "image": "${MODULES.CameraModule}",
               "createOptions": {}
             }
+          },
+          "voiddetectionbrainwave": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "intelligentedge/void-detection-brainwave:1.0.0",
+              "createOptions": {
+                "ExposedPorts": {
+                  "50051/tcp": {}
+                },
+                "HostConfig": {
+                  "Privileged": true,
+                  "PortBindings": {
+                    "50051/tcp": [
+                      {
+                        "HostPort": "50051"
+                      }
+                    ]
+                  },
+                  "Binds": [
+                    "/etc/hosts:/etc/hosts"
+                  ],
+                  "Devices": [
+                    {
+                      "PathOnHost": "/dev/catapult0",
+                      "PathInContainer": "/dev/catapult0"
+                    },
+                    {
+                      "PathOnHost": "/dev/catapult1",
+                      "PathInContainer": "/dev/catapult1"
+                    }
+                  ]
+                }
+              }
+            }
           }
         }
       }

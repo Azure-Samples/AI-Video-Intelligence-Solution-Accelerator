@@ -9,7 +9,7 @@ namespace VideoProcessorModule
             get { return bboxes.Length == 0; }
         }
         public int[] classes;
-        public double[] scores;
-        public double[][] bboxes;
+        public float[] scores;
+        public float[][] bboxes;
     }
 }

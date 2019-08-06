@@ -6,7 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\NumSharp\NumSharp1\src\NumSharp.Core\NumSharp.Core.csproj" />
     <ProjectReference Include="..\EdgeDevice\modules\VideoProcessorModule\VideoProcessorModule.csproj" />
   </ItemGroup>
 
