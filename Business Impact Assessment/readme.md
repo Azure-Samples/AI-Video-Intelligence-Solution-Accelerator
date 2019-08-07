@@ -1,22 +1,22 @@
 # Business Assessment Analysis
 
-## Objective:
+## Objective
 
 To Enable Business Decision Makers across Industries to make informed decisions on the Costs and Benefits for deploying AI Video Intelligence Solutions across various use-case scenarios.
 
-## Useful for: 
+## Useful for 
 
 1. Business Decision Makers across organizations
 2. Partners and Vendors developing Solution Accelerators
 3. Sales Teams pitching the solution accelerator to customers
 
-**Format**: Microsoft Excel Workbook
+**Format** Microsoft Excel Workbook
 
-## Description: 
+## Description 
 
 The Busines Impact Assessment Template contains a number of common scenarios where video analytics could create cost savings, revenue increases, and man-hour savings. The tool is based on several assumptions based off public reports and data across industries. These assumptions are highlighted YELLOW in the file and are meant to serve as a reference. However, the users should change the assumptions based on their local data and environment to get the respective costs and benefits by deploying the solutions at their end. The assumptions in ORANGE are typical recommendations from a technology standpoint. These assumptions should be discussed with the Vendor and may need to be updated based on specific deployment conditions. Here's a description of the use-cases.
 
-## General Directions of Use: 
+## General Directions of Use
 
 1. Go to the Relevant Industry Tab (Retail / Healthcare / Manufacturing)
 2. Edit the assumptions in the YELLOW highlighted cells for the use case you are looking at for your environment
@@ -26,9 +26,9 @@ The Busines Impact Assessment Template contains a number of common scenarios whe
 
 **Currently Supported Industry Verticals**: Retail, Healthcare, and Manufacturing
 
-## Use-Cases:
+## Use-Cases
 
-### Manufacturing:
+### Manufacturing
 
 1. **Automated Quality Testing**: This is to enable Quality Inspection using the solution. This will improve the accuracy and consistency of identifying defective parts on the assembly line. Potential Savings occur by replacing the expensive industry equipment for testing and reducing the labor-hours. Moreover, some parts of the assembly line may become a bottleneck due to slow inspection. A Video Solution Accelerator can speed up the process and improve throughput as well.
 
@@ -37,7 +37,7 @@ The Busines Impact Assessment Template contains a number of common scenarios whe
 3. **Unplanned Downtime Reduction**: Multiple factors can result in unplanned downtime, and several unplanned downtimes result due to visible defects in the assembly line. These could be prevented through Visual Analytics Solutions on Thermal / Depth / RGB cameras. Because an assembly line downtime can be very expensive, deploying this solution can save on a lot of unplanned costs, improving productivity and efficiency
 
 
-### Retail:
+### Retail
 
 1. **Shrinkage / Theft**: This is for preventing thefts out of the retail outlet, and would typically need cameras covering cashier areas, or doors. This could massively reduce the shrinkage, which is a Cost item for retailers. Given thin margins in the retail industry, this could have a huge bottom-line impact.
 
@@ -47,7 +47,7 @@ The Busines Impact Assessment Template contains a number of common scenarios whe
 
 4. **Video Ads**: Contextual ads based on what products customers are interested in exploring can result in higher revenues. Deploying Video Analytics at retail stores to give online-like personalized recommendations can boost sales.
 
-### Healthcare: 
+### Healthcare 
 
 1. **Patient Monitoring**: Monitoring Patients in Intensive Care Units or wards in hospitals often need round-the-clock dedicated staff for monitoring. Automated Patient Monitoring could be enabled through Video Analytics and can help with the staff productivity and reduce patient injuries while in hospitals.
 
