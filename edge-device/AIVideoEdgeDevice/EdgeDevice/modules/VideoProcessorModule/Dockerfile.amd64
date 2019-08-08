@@ -1,3 +1,6 @@
+# opencvsharp contains the built hardware layer for OpenCVSharp
+FROM azureaivideo/opencvsharp:4.1.0 AS opencvsharp
+
 FROM microsoft/dotnet:2.2-sdk AS build-env
 
 WORKDIR /app
@@ -7,6 +10,8 @@ RUN dotnet restore
 
 COPY . ./
 RUN dotnet publish -c Release -o out
+
+COPY --from=opencvsharp /opencvsharp/lib/libOpenCvSharpExtern.so ./out/
 
 FROM microsoft/dotnet:2.2-runtime-stretch-slim
 

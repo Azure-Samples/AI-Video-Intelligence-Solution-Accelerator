@@ -68,40 +68,32 @@ namespace VideoProcessorModule
             lock(reportLock)
             {
                 Console.WriteLine($"Processing took the {processorType} {recognitionDuration.TotalMilliseconds} msec for {body.CameraId}   {body.Time}.");
-                bool doUpload = UploadThreshold.ShouldUpload(body.CameraId, features.Count);
-                if (doUpload)
+                Console.WriteLine($"  Recognized {features.Count} features in {body.SmallImage.Length} byte 300x300 image.");
+
+                byte[] imageBytes = body.Image.ToByteArray();
+                DateTime uploadDurationStart = DateTime.Now;
+                string verb = "upload image to BLOB store";
+                try
                 {
-                    Console.WriteLine($"  Recognized {features.Count} features in {body.SmallImage.Length} byte 300x300 image.");
+                    Task task = blobHelper.UploadBlobAsync(body.CameraId,
+                                                        body.Time,
+                                                        body.Type,
+                                                        imageBytes);
+                    task.Wait();
 
-                    byte[] imageBytes = body.Image.ToByteArray();
-                    DateTime uploadDurationStart = DateTime.Now;
-                    string verb = "upload image to BLOB store";
-                    try
-                    {
-                        Task task = blobHelper.UploadBlobAsync(body.CameraId,
-                                                            body.Time,
-                                                            body.Type,
-                                                            imageBytes);
-                        task.Wait();
+                    TimeSpan blobUploadDuration = DateTime.Now - uploadDurationStart;
+                    Console.WriteLine($"  BLOB upload took {blobUploadDuration.TotalMilliseconds} msec for  {imageBytes.LongLength} bytes");
 
-                        TimeSpan blobUploadDuration = DateTime.Now - uploadDurationStart;
-                        Console.WriteLine($"  BLOB upload took {blobUploadDuration.TotalMilliseconds} msec for  {imageBytes.LongLength} bytes");
-
-                        DateTime messageStart = DateTime.Now;
-                        verb = "send messages to IoT Hub";
-                        SendRecognitionMessages();
-                        SendImageMessage();
-                        TimeSpan messagesDuration = DateTime.Now - messageStart;
-                        Console.WriteLine($"  Sending messages took {messagesDuration.TotalMilliseconds} msec");
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"  Failed to {verb}: {ex.Message}");
-                    }
+                    DateTime messageStart = DateTime.Now;
+                    verb = "send messages to IoT Hub";
+                    SendRecognitionMessages();
+                    SendImageMessage();
+                    TimeSpan messagesDuration = DateTime.Now - messageStart;
+                    Console.WriteLine($"  Sending messages took {messagesDuration.TotalMilliseconds} msec");
                 }
-                else
+                catch (Exception ex)
                 {
-                    Console.WriteLine($"  No features were recognized in {body.SmallImage.Length} byte 300x300 image. Not uploading to BLOB store.");
+                    Console.WriteLine($"  Failed to {verb}: {ex.Message}");
                 }
             }
         }
@@ -127,7 +119,7 @@ namespace VideoProcessorModule
         /// </summary>
         private void SendRecognitionMessages()
         {
-            const string schema = "recognition:v1";
+            const string schema = "recognition;v1";
 
             foreach (ImageFeature feature in this.features)
             {
@@ -157,7 +149,7 @@ namespace VideoProcessorModule
 
         private void SendImageMessage()
         {
-            const string schema = "image-upload:v1";
+            const string schema = "image-upload;v1";
 
             // Report processing time as milliseconds with one decimal place
             double reportedMsec = double.Parse(this.recognitionDuration.TotalMilliseconds.ToString("#.#"));

@@ -23,6 +23,8 @@ namespace CameraModule
 
         private IImageSource ImageSource { get; set; }
 
+        public bool IsDisabled { get; private set; }
+
         /// <summary>
         /// Add a camera as defined in Module Twin to the list
         /// </summary>
@@ -31,7 +33,7 @@ namespace CameraModule
         {
             Camera cam = new Camera(cameraFromTwin);
             // Ensure uniqueness for real enabled cameras
-            if (cam.PortType != "disabled" && cam.PortType != "simulator")
+            if (cam.PortType != "disabled" && cam.IsDisabled == false && cam.PortType != "simulator")
             {
                 foreach(Camera test in s_cameras)
                 {
@@ -46,20 +48,22 @@ namespace CameraModule
                 }
             }
             
-            switch (cam.PortType)
+            if (!cam.IsDisabled)
             {
-                case "simulator": cam.ImageSource = new Simulator(cam.Port);
-                    s_cameras.Add(cam);
-                    break;
-                case "CameraServer": cam.ImageSource = new CameraServerClient(cam.Port);
-                    s_cameras.Add(cam);
-                    break;
-                case "disabled":
-                    break;
-                default:
-                    throw new ApplicationException($"Unknown camera hardware type: {cam.PortType}");
+                switch (cam.PortType)
+                {
+                    case "simulator": cam.ImageSource = new Simulator(cam.Port);
+                        s_cameras.Add(cam);
+                        break;
+                    case "CameraServer": cam.ImageSource = new CameraServerClient(cam.Port);
+                        s_cameras.Add(cam);
+                        break;
+                    case "disabled":
+                        break;
+                    default:
+                        throw new ApplicationException($"Unknown camera hardware type: {cam.PortType}");
+                }
             }
-
         }
 
         public static void DisconnectAll()
@@ -75,12 +79,13 @@ namespace CameraModule
         /// Construct a Camera object with the given semantic ID.
         /// </summary>
         /// <param name="camera">The camera object from Module Twin.</param>
-        /// <remarks>This really should take a delegate to provide image notification.</remarks>
         private Camera(JObject camera)
         {
             CameraId = (string)camera["id"];
             Port = (string)camera["port"];
             PortType = (string)camera["type"];
+            var disabled = camera["disabled"];
+            IsDisabled = disabled != null ? (bool)disabled : false;
         }
 
         /// <summary>

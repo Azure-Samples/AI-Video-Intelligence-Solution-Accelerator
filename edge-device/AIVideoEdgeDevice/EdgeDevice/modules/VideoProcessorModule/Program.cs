@@ -14,6 +14,7 @@ namespace VideoProcessorModule
     using BlobStorage;
     using VideoProcessorGrpc;
     using Microsoft.Azure.Devices.Shared;
+    using FpgaClient;
 
     class Program
     {
@@ -92,12 +93,6 @@ namespace VideoProcessorModule
                     Console.WriteLine("Desired property change:");
                     Console.WriteLine(JsonConvert.SerializeObject(desiredProperties));
 
-                    if (desiredProperties.Contains("uploadThreshold"))
-                    {
-                        UploadThreshold.Threshold = desiredProperties["uploadThreshold"];
-                        Console.WriteLine($"Setting uploadThreshold threshold to {UploadThreshold.Threshold}");
-                    }
-
                     string mlModelType = CpuModel.CpuModelProcessorType;
                     if (desiredProperties.Contains("mlModelType"))
                     {
@@ -135,7 +130,7 @@ namespace VideoProcessorModule
                                 s_currentModel = new GpuModel();
                                 break;
                             case FpgaModel.FpgaModelProcessorType:
-                                s_currentModel = new FpgaModel("processorfpga");
+                                s_currentModel = new FpgaModel("voiddetectionbrainwave", 50051);
                                 break;
                             case CpuModel.CpuModelProcessorType:
                             default:

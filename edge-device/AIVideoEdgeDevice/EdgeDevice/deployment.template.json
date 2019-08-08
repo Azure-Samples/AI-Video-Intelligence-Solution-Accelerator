@@ -10,9 +10,9 @@
             "minDockerVersion": "v1.25",
             "loggingOptions": "",
             "registryCredentials": {
-              "azureaivideoregistry": {
-                "username": "$AIVIDEO_CONTAINER_REGISTRY_USERNAME",
-                "password": "$AIVIDEO_CONTAINER_REGISTRY_PASSWORD",
+              "default": {
+                "username": "$CONTAINER_REGISTRY_USERNAME",
+                "password": "$CONTAINER_REGISTRY_PASSWORD",
                 "address": "docker.io"
               }
             }
@@ -86,16 +86,6 @@
               "image": "${MODULES.CameraModule}",
               "createOptions": {}
             }
-          },
-          "ProcessorFPGA": {
-            "version": "1.0",
-            "type": "docker",
-            "status": "running",
-            "restartPolicy": "always",
-            "settings": {
-              "image": "${MODULES.ProcessorFPGA}",
-              "createOptions": {}
-            }
           }
         }
       }
@@ -108,6 +98,38 @@
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
+        }
+      }
+    },
+    "VideoProcessorModule": {
+      "properties.desired": {
+        "schemaVersion": "1.0",
+        "blobStorageSasUrl": "$BLOB_STORAGE_SAS_URL",
+        "mlModelType": "$ML_MODEL_TYPE"
+      }
+    },
+    "CameraModule": {
+      "properties.desired": {
+        "schemaVersion": "1.0",
+        "cameras": {
+          "cam001": {
+            "port": "counter",
+            "id": "$CAMERA_ID_FIXED_IMAGE",
+            "type": "simulator",
+            "disabled": false
+          },
+          "cam002": {
+            "port": "cycle-0",
+            "id": "$CAMERA_ID_CYCLE_IMAGES",
+            "type": "simulator",
+            "disabled": false
+          },
+          "cam003": {
+            "port": "MY_SERVER//700",
+            "id": "real_camera",
+            "type": "CameraServer",
+            "disabled": true
+          }
         }
       }
     }

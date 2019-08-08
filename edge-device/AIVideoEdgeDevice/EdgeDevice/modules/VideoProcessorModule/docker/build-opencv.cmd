@@ -1,0 +1,1 @@
+docker build  --rm -f "Dockerfile.amd64-opencv" -t opencvfull:4.1.0 .

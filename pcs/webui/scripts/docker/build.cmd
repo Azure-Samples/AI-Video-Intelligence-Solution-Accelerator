@@ -4,7 +4,7 @@ setlocal
 :: Note: use lowercase names for the Docker images
 SET DOCKER_IMAGE=azureaivideo/pcs-remote-monitoring-webui
 :: "testing" is the latest dev build, usually matching the code in the "master" branch
-SET DOCKER_TAG=%DOCKER_IMAGE%:3.0.1
+SET DOCKER_TAG=%DOCKER_IMAGE%:3.0.2
 
 :: strlen("\scripts\docker\") => 16
 SET APP_HOME=%~dp0
