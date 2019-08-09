@@ -374,14 +374,14 @@
         },
         "pcsReleaseVersion": {
             "type": "string",
-            "defaultValue": "3.0.0",
+            "defaultValue": "3.0.2",
             "metadata": {
                 "description": "The release version is used for repoURL for vmScriptUri"
             }
         },
         "pcsDockerTag": {
             "type": "string",
-            "defaultValue": "3.0.0",
+            "defaultValue": "3.0.2",
             "metadata": {
                 "description": "The docker tag can be same as release version and is the latest released docker image"
             }
