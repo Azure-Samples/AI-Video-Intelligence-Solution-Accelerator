@@ -50,17 +50,47 @@ namespace VideoProcessorModule
         {
             ImageProcessor proc = new ImageProcessor(blobHelper, client, imageProc.ProcessorType, body);
 
-            // Perform and measure elapsed time for the ML model work
-            DateTime startTime = DateTime.Now;
-            proc.features = imageProc.Process(body.SmallImage);
-            proc.recognitionDuration = DateTime.Now - startTime;
-
-            // Loop to the next recognition task without waiting for the report to process
-            if (proc.features != null)
+            if (!body.SkipMlProcessing)
             {
-                Task reportTask = new Task(() => proc.Report());
-                reportTask.Start();
+                // Perform and measure elapsed time for the ML model work
+                DateTime startTime = DateTime.Now;
+                proc.features = imageProc.Process(body.SmallImage);
+                proc.recognitionDuration = DateTime.Now - startTime;
+
+                // Loop to the next recognition task without waiting for the report to process
+                if (proc.features != null)
+                {
+                    Task reportTask = new Task(() => proc.Report());
+                    reportTask.Start();
+                }
             }
+            else
+            {
+                // Don't process ML or send any messages; just upload to BLOB
+                try
+                {
+                    proc.UploadToBlob();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"  Failed to upload image to BLOB store: {ex.Message}");
+                }
+            }
+        }
+        
+        private void UploadToBlob()
+        {
+            byte[] imageBytes = body.Image.ToByteArray();
+            DateTime uploadDurationStart = DateTime.Now;
+
+            Task task = blobHelper.UploadBlobAsync(body.CameraId,
+                                                body.Time,
+                                                body.Type,
+                                                imageBytes);
+            task.Wait();
+
+            TimeSpan blobUploadDuration = DateTime.Now - uploadDurationStart;
+            Console.WriteLine($"  BLOB upload took {blobUploadDuration.TotalMilliseconds} msec for  {imageBytes.LongLength} bytes");
         }
 
         private void Report()
@@ -70,19 +100,10 @@ namespace VideoProcessorModule
                 Console.WriteLine($"Processing took the {processorType} {recognitionDuration.TotalMilliseconds} msec for {body.CameraId}   {body.Time}.");
                 Console.WriteLine($"  Recognized {features.Count} features in {body.SmallImage.Length} byte 300x300 image.");
 
-                byte[] imageBytes = body.Image.ToByteArray();
-                DateTime uploadDurationStart = DateTime.Now;
                 string verb = "upload image to BLOB store";
                 try
                 {
-                    Task task = blobHelper.UploadBlobAsync(body.CameraId,
-                                                        body.Time,
-                                                        body.Type,
-                                                        imageBytes);
-                    task.Wait();
-
-                    TimeSpan blobUploadDuration = DateTime.Now - uploadDurationStart;
-                    Console.WriteLine($"  BLOB upload took {blobUploadDuration.TotalMilliseconds} msec for  {imageBytes.LongLength} bytes");
+                    UploadToBlob();
 
                     DateTime messageStart = DateTime.Now;
                     verb = "send messages to IoT Hub";

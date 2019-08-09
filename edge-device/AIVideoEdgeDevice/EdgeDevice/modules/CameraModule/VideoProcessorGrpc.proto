@@ -20,6 +20,7 @@ message ImageBody {
   string type = 3;
   bytes image = 4;
   bytes smallImage = 5;
+  bool skipMlProcessing = 6;
 }
 
 // The response message is null for success, non-null for error

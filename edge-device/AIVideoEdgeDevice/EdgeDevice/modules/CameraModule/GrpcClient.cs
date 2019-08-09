@@ -10,6 +10,7 @@ namespace VideoProcessorGrpc
     {
         Channel grpcChannel = null;
         GrpcChannel.GrpcChannelClient grpcClient = null;
+        readonly object uploadLock = new object();
 
         /// <summary>
         /// GrpcClient contains retry logic, and the constructor does not throw.
@@ -46,39 +47,42 @@ namespace VideoProcessorGrpc
         /// <returns>True for success</returns>
         public bool UploadImage(ImageBody body)
         {
-            bool succeeded = false;
-            try
+            lock (uploadLock)
             {
-                EnsureConnection();
-                grpcClient.SubmitImage(body);
-                succeeded = true;
-                return true;
-            }
-            catch(Grpc.Core.RpcException ex)
-            {
-                if (ex.StatusCode == StatusCode.Unavailable)
+                bool succeeded = false;
+                try
                 {
-                    Console.WriteLine($"Error sending grpc message: Grpc server is unavailable");
-                    return false;
+                    EnsureConnection();
+                    grpcClient.SubmitImage(body);
+                    succeeded = true;
+                    return true;
                 }
-                else
+                catch (Grpc.Core.RpcException ex)
+                {
+                    if (ex.StatusCode == StatusCode.Unavailable)
+                    {
+                        Console.WriteLine($"Error sending grpc message: Grpc server is unavailable");
+                        return false;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error sending grpc message");
+                        Console.WriteLine(ex);
+                        return false;
+                    }
+                }
+                catch (Exception ex)
                 {
                     Console.WriteLine($"Error sending grpc message");
                     Console.WriteLine(ex);
                     return false;
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error sending grpc message");
-                Console.WriteLine(ex);
-                return false;
-            }
-            finally
-            {
-                if (!succeeded)
+                finally
                 {
-                    Disconnect();
+                    if (!succeeded)
+                    {
+                        Disconnect();
+                    }
                 }
             }
         }

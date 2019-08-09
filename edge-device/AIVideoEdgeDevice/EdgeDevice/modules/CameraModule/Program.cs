@@ -90,20 +90,21 @@ namespace CameraModule
         {
             lock(s_twinUpdateLocker)
             {
+                Camera.DisconnectAll();
                 JObject camerasDefinition = desiredProperties["cameras"];
                 if (camerasDefinition != null)
                 {
-                    Camera.DisconnectAll();
                     Console.WriteLine("Reading camera definitions from Module Twin");
                     foreach (KeyValuePair<string, JToken> x in camerasDefinition)
                     {
                         // Each camera entry arrives here as an KeyValuePair. We don't use the key, just the value.
                         if (x.Value is JObject found)
                         {
-                            Camera.AddCamera(found);
+                            Camera.AddCamera(found, s_grpcClient);
                         }
                         Console.WriteLine($"    Camera value: {x.Value.ToString()}");
                     }
+                    Camera.StartAll();
                 }
                 else
                 {
@@ -114,33 +115,13 @@ namespace CameraModule
         }
 
         /// <summary>
-        /// Performs the main processing.
+        /// Waits. Camera objects do all the work.
         /// </summary>
         private static void MainLoop()
         {
             do
             {
-                lock (s_twinUpdateLocker)
-                {
-                    // Send images from each camera every ten seconds
-                    foreach (Camera camera in Camera.s_cameras)
-                    {
-                        try
-                        {
-                            ImageBody body = camera.GetImage();
-                            if (body != null)
-                            {
-                                Console.WriteLine($"Sending a {body.Image.Length} byte image from {body.CameraId} at {body.Time}");
-                                s_grpcClient.UploadImage(body);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Error sending grpc message to VideoProcessor module: {ex.Message}");
-                        }
-                    }
-                }
-                Task.Delay(10000).Wait();
+                Task.Delay(1000).Wait();
             } while (s_mainLoopRunning);
         }
     }

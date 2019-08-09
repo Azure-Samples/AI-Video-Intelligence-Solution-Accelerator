@@ -116,18 +116,29 @@
             "port": "counter",
             "id": "$CAMERA_ID_FIXED_IMAGE",
             "type": "simulator",
+            "secondsBetweenImages": 10.0,
             "disabled": false
           },
           "cam002": {
             "port": "cycle-0",
             "id": "$CAMERA_ID_CYCLE_IMAGES",
             "type": "simulator",
+            "secondsBetweenImages": 10.0,
             "disabled": false
           },
           "cam003": {
             "port": "MY_SERVER//700",
             "id": "real_camera",
             "type": "CameraServer",
+            "secondsBetweenImages": 10.0,
+            "disabled": true
+          },
+          "cam004": {
+            "port": "MY_SERVER//701",
+            "id": "training_images_camera",
+            "type": "CameraServer",
+            "secondsBetweenImages": 1.0,
+            "skipMLProcessing": true,
             "disabled": true
           }
         }

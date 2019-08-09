@@ -15,7 +15,7 @@ namespace CameraTestClientCore
     {
         static void Main(string[] args)
         {
-            CameraServerClient client = new CameraServerClient("PURL2//700");
+            CameraServerClient client = new CameraServerClient("localhost//700");
 
             Console.WriteLine("Press 's' to resend, any other key to exit...");
             while (true)
