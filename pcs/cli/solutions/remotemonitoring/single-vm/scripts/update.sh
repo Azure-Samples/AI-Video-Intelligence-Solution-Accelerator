@@ -9,7 +9,6 @@ if [ -z "$PCS_RELEASE_VERSION" ]; then
 fi
 
 # Where to download scripts from
-#REPOSITORY="https://raw.githubusercontent.com/jetstream/aivideo-cli/$PCS_RELEASE_VERSION/solutions/remotemonitoring/single-vm"
 REPOSITORY="https://raw.githubusercontent.com/Azure-Samples/AI-Video-Intelligence-Solution-Accelerator/$PCS_RELEASE_VERSION/pcs/cli/solutions/remotemonitoring/single-vm"
 SCRIPTS_URL="${REPOSITORY}/scripts/"
 

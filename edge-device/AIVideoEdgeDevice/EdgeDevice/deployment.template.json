@@ -105,7 +105,7 @@
       "properties.desired": {
         "schemaVersion": "1.0",
         "blobStorageSasUrl": "$BLOB_STORAGE_SAS_URL",
-        "mlModelType": "$ML_MODEL_TYPE"
+        "mlModelType": "CPU"
       }
     },
     "CameraModule": {

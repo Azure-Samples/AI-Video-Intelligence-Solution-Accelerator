@@ -34,3 +34,42 @@ CameraId will be labeled in the image window.
 ### Running without camera identification
 1. Click `Ctrl-F5` to run the server with no image windows. The web server will start immediately.
 
+### Point the Edge device's CameraModule at your CameraServer
+To make your Edge device retrieve images from your CameraServer,
+1. Determin your CameraServer machine identification:
+    1. If the CameraServer is running on a different machine than the Edge device and the CameraServer
+        machine can be pinged by name, use the CameraServer machine name.
+    2. If the CameraServer is running on the same machine as the Edge device or the CameraServer
+        cannot be pinged by machine name, use the CameraServer's IP address
+        (for example 192.168.10.54).
+2. Use the Azure Portal to modify
+the Module Twin for CameraModule so there is a camera entry that looks like this:
+```
+        "cam003": {
+          "port": "MY_SERVER//700",
+          "id": "real_camera",
+          "type": "CameraServer",
+          "secondsBetweenImages": 10,
+          "disabled": false
+        },
+```
+3. Replace the `MY_SERVER` component with the CameraServer machine identification from Step 1.
+4. Replace the `700` component with the camera ID you chose earlier.
+
+### (Optional) Use CameraServer to capture images for use in training
+
+1. Use the Azure Portal to modify
+the Module Twin for CameraModule so there is a camera entry that looks like this:
+```
+        "cam004": {
+          "port": "MY_SERVER//700",
+          "id": "training_images_camera",
+          "type": "CameraServer",
+          "secondsBetweenImages": 1,
+          "skipMLProcessing": true,
+          "disabled": false
+        }
+```
+The `skipMLProcessing` parameter will cause the ProcessorModule to upload the image
+to BLOB storage but skip the image analysis. No IoT Hub messages will be generated for
+images from this camera.

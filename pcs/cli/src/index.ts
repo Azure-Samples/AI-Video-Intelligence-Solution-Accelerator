@@ -348,15 +348,15 @@ function main() {
                             answers.version = program.versionOverride;
                             answers.dockerTag = program.dockerTagOverride;
                         } else if (program.versionOverride) {
-                            // In order to run latest code verion override to master is required
+                            // In order to run latest code version override to master is required
                             answers.version = program.versionOverride;
                             answers.dockerTag = 'testing';
                         } else if (program.dockerTagOverride) {
                             answers.dockerTag = program.dockerTagOverride;
                         } else {
                             // For a released version the docker tag and version should be same
-                            // Default to latest released verion (different for remotemonitoring and devicesimulation)
-                            const version = '3.0.0';
+                            // Default to latest released version (different for remotemonitoring and devicesimulation)
+                            const version = '3.0.2';
                             answers.version = version;
                             answers.dockerTag = version;
                         }

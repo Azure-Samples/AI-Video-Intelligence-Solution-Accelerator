@@ -81,146 +81,84 @@ If you create your AI Video Edge Device locally (rather than as a cloud resource
 you may optionally connect it to a USB camera using the simple
 [Camera Server sample application](edge-device/UsbCamera/readme.md).
 
-#### Choose an Azure AI Video Device platform
+### Prerequisites
+* VS Code with Azure IoT Hub extensions installed according to 
+[this article](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-vs-code-develop-module).
+
+### Prepare VS Code for deployment
+1. Navigate to [the Azure IoT Device source code](edge-device/AIVideoEdgeDevice/EdgeDevice/readme.md)
+    and open that folder (which contains the `deployment.template.json` file) in VS Code.
+2. Open the `.env.template` file and save a copy of it as `.env`.
+3. In the `.env` file, populate the `BLOB_STORAGE_SAS_URL` value with the BLOB Storage SAS
+    Connection String that you generated earlier. Make sure the value is within quotes. 
+    You won't need to add the `CONTAINER_REGISTRY_USERNAME` and `CONTAINER_REGISTRY_PASSWORD` 
+    values unless you want to try modifying and
+    deploying your own versions of the sample modules.
+
+### Deploy to your chosen Azure AI Video Device platform
 The primary platform for Azure IoT Devices in the AI Video Intelligence Solution Accelerator is
-Azure Data Box Edge, but non-DBE computers can also be used. Four common options
-for hosting the Azure IoT Device are shown below. This walkthrough follows the fourth option, 
-**Deploy to an Azure cloud VM**.
-*  **Deploy to a Data Box Edge:** If you are deploying to a Databox Edge as a device, you will 
-need to connect it to the IoT Hub that was created when you ran the AI Video 
-Intelligence Solution Accelerator. 
+Azure Data Box Edge, but non-DBE computers can also be used. Here are three options for deployment:
+* **Run an Azure IoT Device on your own computer using VS Code:** 
+    1. Register a new Azure IoT Edge device from Visual Studio Code using 
+    [these instructions](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-register-device-vscode).
+    1. Press Ctl-Shift-P and select Azure IoT Edge: Setup IoT Edge Simulator.
+    3. Select the name of your newly created device.
+    4. Right-click the `deployment.template.json` file and select Build and Run IoT Edge
+        Solution in Simulator.
+
+    Note that the Edge device will continue to run even if you close VS Code. To stop the Edge device,
+    press Ctl-Shift-P and select Azure IoT Edge: Stop IoT Edge Simulator.
+
+*  **Deploy to a Data Box Edge:** 
     1. Follow the 
        [Data Box Edge instructions](https://docs.microsoft.com/en-us/azure/databox-online/data-box-edge-deploy-configure-compute-advanced) 
-       to create a Data Box Edge device that is connected to your IoT Hub. 
+       to create a Data Box Edge device that is connected to the IoT Hub that was created 
+        when you ran the AI Video Intelligence Solution Accelerator. 
     2. In the Azure Portal, navigate to your IoT Hub.
-    1. Under **Automatic Device Management**, select **IoT Edge**
-    4. In the devices list, select the device that corresponds to the DBE device you
-        just connected. Its name will be the DBE name with "-edge" appended.
-    2. Skip down this page to [Populate the Device with the Required Modules](#populate-the-device-with-the-required-modules) to complete the deployment.
-* **Run an Azure IoT Device in VS Code:** 
-    1. Using the instructions in 
-    [this article](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-vs-code-develop-module),
-    set up VS Code and add all the listed prerequisites.
-    2. Navigate to [the Azure IoT Device source code](edge-device/AIVideoEdgeDevice/EdgeDevice/readme.md)
-    and open that folder (which contains the `deployment.template.json` file) in VS Code.
-    2. Register a new Azure IoT Edge device from Visual Studio Code using 
+    1. Under *Automatic Device Management*, select *IoT Edge*.
+    4. In the devices list, find the device that corresponds to the DBE device you
+        just connected. Its name will be the DBE name with "-edge" appended. Make note of the name.
+    3. Right-click the `deployment.dbe.template.json` file and select Generate IoT Edge Deployment Manifest.
+    8. In the *AZURE IOT HUB* section of VS Code, under Devices, right click the name of your DBE device.
+    7. Select Create Deployment for Single Device. You will be prompted for a file name.
+    8. Select the file named `deployment.dbe.amd64.json` which can be found in the `config` directory.
+        Do not select the template file by mistake.
+    
+    The deployment to the DBE will take a few minutes, and you can monitor the progress of the deployment via the 
+    Azure Portal. If the DBE's FPGA needs to be re-flashed, it may take another 10 or 15 minutes after the 
+    deployment succeeds before the FPGA is flashed and operational.
+
+* **Deploy to an Azure cloud VM:** If you don't want to run the Azure Edge device on your own computer but
+    you don't have a DBE device, you can deploy to a standard Azure VM.
+
+    1. Register a new Azure IoT Edge device from Visual Studio Code using 
     [these instructions](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-register-device-vscode).
-    3. [Build and run the solution](https://docs.microsoft.com/en-us/azure/iot-edge/how-to-vs-code-develop-module#build-and-run-container-for-debugging-and-debug-in-attach-mode).
-      The solution will not work correctly the first time you run it, but you must run it once
-      before performing the next step.
-    4. Set the various Module Twin properties as described
-    below in [Populate the Device with the Required Modules](#populate-the-device-with-the-required-modules).
-    Now that the module twin properties are set correctly the solution will run as designed.
-* **Deploy to a local Linux machine:** 
-    1. Perform the [Register a new Edge Device with the IoT Edge Hub](#Register-a-new-Edge-Device-with-the-IoT-Edge-Hub) step just below this section.
-    1. Set up your Linux machine and provide the connection string according to these instructions:
-      [Install the Azure IoT Edge runtime on Linux (x64)](https://docs.microsoft.com/bs-latn-ba/azure/iot-edge/how-to-install-iot-edge-linux).
-    2. Skip down this page to [Populate the Device with the Required Modules](#populate-the-device-with-the-required-modules) to complete the deployment.
-* **Deploy to an Azure cloud VM:** Continue this walkthrough to deploy to an Azure VM.
+    1. Click on the newly created device in the device list and copy the device connection string
+       (primary key) from the device details page. Save this for later use. (You may have to hit
+        `F5` to see your new device in the list.)
+    1. Open [portal.azure.com](https://portal.azure.com) in a new tab.
+    2. Add a new *Azure IoT Edge on Ubuntu* resource to the resource group containing your solution.
+    3. Enter a name for your VM.
+    3. Under **Administrator account** select "password" as the Authentication Type.
+    4. Under **Inbound port rules** select "SSH".
+    3. Click "Review + create".
+    7. After validation passes, click "Create".
+    6. Wait for the deployment to finish.
+    8. Click the "Go to resource" button.
+    9. Open the **Run command** option under **Operations**.
+    10. Select the **RunShellScript** item.
+    11. Enter `/etc/iotedge/configedge.sh "{device_connection_string}"`, where
+        `{device_connection_string}` is the connection string you saved in
+        [Register a new Edge Device with the IoT Edge Hub](#register-a-new-edge-device-with-the-iot-edge-hub). This process takes several minutes and gives no feedback until it completes,
+        so be patient.
+    3. Right-click the `deployment.template.json` file and select Generate IoT Edge Deployment Manifest.
+    8. In the *AZURE IOT HUB* section of VS Code, under Devices, right click the name of your device.
+    7. Select Create Deployment for Single Device. You will be prompted for a file name.
+    8. Select the file named `deployment.amd64.json` which can be found in the `config` directory.
+        Do not select the template file by mistake.
 
-## Register a new Edge Device with the IoT Edge Hub
-1. In the Azure Portal open the the IoT Hub that was created by the solution accelerator.
-1. Under **Automatic Device Management**, select **IoT Edge**
-1. Near the top of the page, select **Add an IoT Edge device**
-1. Provide a name in the **Device ID** section, then click **Save**. This will create a new 
-   device registration in your IoT Hub.
-1. Click on the new device in the device list and copy the device connection string
-   (primary key) from the device details page. Save this for later use. (You may have to hit
-    `F5` to see your new device in the list.)
-1. Notice the **Modules** list at the bottom of this page. This is where we perform the next step,
-    so leave this tab open in your browser.
-
-## Create the Edge Device on an Azure cloud VM
-1. Open [portal.azure.com](https://portal.azure.com) in a new tab.
-2. Add a new *Azure IoT Edge on Ubuntu* resource to the resource group containing your solution.
-3. Enter a name for your VM.
-3. Under **Administrator account** select "password" as the Authentication Type.
-4. Under **Inbound port rules** select "SSH".
-3. Click "Review + create".
-7. After validation passes, click "Create".
-6. Wait for the deployment to finish.
-8. Click the "Go to resource" button.
-9. Open the **Run command** option under **Operations**.
-10. Select the **RunShellScript** item.
-11. Enter `/etc/iotedge/configedge.sh "{device_connection_string}"`, where
-    `{device_connection_string}` is the connection string you saved in
-    [Register a new Edge Device with the IoT Edge Hub](#register-a-new-edge-device-with-the-iot-edge-hub). This process takes several minutes and gives no feedback until it completes,
-    so be patient.
-
-## Populate the Device with the Required Modules
-#### Add `grocerymodel`
-1. Return to your browser tab with the device's **Modules** list. Now we're ready to add our 
-  modules: grocerymodel, CameraModule, and VideoProcessorModule.
-1. Click the "Refresh" button at the top of the page, and you should see that the `$edgeAgent`
-  module is running.
-1. Select **Set modules** at the top of the page.
-1. In the device details in the Azure Portal, in the lower section of the 
-**Set modules** page, under **Deployment Modules**, click on **Add**.
-1. From the drop-down menu select **IoT Edge Module**. You will be asked for the name and the address of the module being added.
-1. Name the module "grocerymodel".  Note that case matters on the module names.
-1. Use `docker.io/azureaivideo/grocerymodelquiet:0.0.1` as the module URL.
-1. There is no module twin data for this module, so leave the checkbox unchecked.  Click **Save**
-
-#### Add `VideoProcessorModule`
-1. Click **Add** to add another IoT Edge Module. This time we'll add the *videoprocessormodule*, 
-naming it "VideoProcessorModule". Provide the URI of the module as described above. 
-The URI is: `docker.io/azureaivideo/videoprocessormodule:0.0.24-amd64`
-1. Check the *Set module twin's desired properties* checkbox.
-1. Modify the module twin using the BLOB Storage SAS URL
-	you generated earlier. The module twin should look like
-```json
-{
-  "properties.desired": {
-    "blobStorageSasUrl": "BlobEndpoint=https://MYSTORE.blob.core.windows.net/;QueueEndpoint=https://MYSTORE.queue.core.windows.net/;FileEndpoint=https://MYSTORE.file.core.windows.net/;TableEndpoint=https://MYSTORE.table.core.windows.net/;SharedAccessSignature=sv=2018-03-28&ss=b&srt=co&sp=wc&se=2020-04-05T05:00:34Z&st=2019-04-20T21:00:34Z&spr=https&sig=BAjwrvjBRMSxN8iRRrcB6g5B0zvh4MxsmLF%2BpE1rBeE8%3D",
-    "uploadThreshold": 5
-  }
-}
-```
-5. You can adjust *uploadThreshold* adjust how often the processor will upload an image if no recognition 
-is found in the images.  1 means all unrecognized images will be uploaded.  5 means 1 out of every 5 unrecognized 
-images will be uploaded.
-1. Click **Save**.
-
-#### Add `CameraModule`
-1. Click **Add** to add another IoT Edge Module. .
-1. From the drop-down menu select **IoT Edge Module**. You will be asked for the name and the address of the module being added.
-1. Name the module "CameraModule".  Note that case matters on the module names.
-1. Use `docker.io/azureaivideo/cameramodule:0.0.15-amd64` as the module URL.
-1. Click the checkbox for *Set module twin's desired properties*. 
-1. Set the module twin values as shown here:
-```json
-{
-  "properties.desired": {
-    "cameras": {
-      "cam01": {
-        "port": "cycle-0",
-        "id": "Camera 01",
-        "type": "simulator"
-      },
-      "cam02": {
-        "port": "counter",
-        "id": "Camera 02",
-        "type": "simulator"
-      }
-    }
-  }
-}
-```
-The `cam01` simulated camera will cycle through simulated images named `cycle-0-0` through `cycle-0-5`,
-and the `cam02` simulated camera will repeatedly send a single image named `counter`.
-
-6. Click **Save**
-
-#### Finish the module deployment
-1. Click **Next** to advance to page 2, **Specify Routes**. There are no required changes here, so 
-2. click **Next** to advance to page 3, **Review Deployment**. 
-3. Click **Submit**.
-4. Return to the **Device Details** page and wait for all of the modules in your device to show
-    a status of "running". This process takes up to ten minutes or more. One of the transient states 
-    you may see is "backoff"; this does not indicate a problem. Note that clicking the "Refresh"
-    button puts up a misleading "Are you sure you want to refresh? Your unsaved edits 
-    will be discarded." warning. At this point you have no unsaved edits, so it is safe to refresh.
-
+    The deployment will take a few minutes, and you can monitor the progress of the deployment via the 
+    Azure Portal.
 
 ## View the results
 
