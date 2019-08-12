@@ -20,15 +20,10 @@ Azure Data Box Edge, but non-DBE computers can also be used.
 (this repo).
 1. From a command prompt: 
    * navigate to `AI-Video-Intelligence-Solution-Accelerator/pcs/cli`
-   * `npm uninstall -g iot-solutions` (remove any other versions)
-   * `npm ci`
-   * `npm start`
-   * `npm link` 
-   * `pcs login` (you will be prompted for your subscription credentials)
-   * `pcs -t remotemonitoring -s basic -r dotnet` (no other options are supported for the AI Video
-Intelligence Solution Accelerator)
-1. Wait for deployment to complete
-1. Verify that deployment completed successfully.  At the end you should have a statement something like:</br> `Solution: MyDeployment is deployed at https://MyDeployment.azurewebsites.net`
+   * `deploy-pcs.cmd` (you will be prompted for your subscription credentials)
+1. Wait for deployment to complete. It takes about 10 to 20 minutes.
+1. Verify that deployment completed successfully.  At the end you should have a statement something 
+    like:</br> `Solution: MyDeployment is deployed at https://MyDeployment.azurewebsites.net`
 1. While signed into the same account that was used in the `pcs login` step, launch the Remote Monitoring 
 website in a browser.  Verify that the site loads.
 1. This sample does not use the standard solution accelerator simulated devices, so to reduce costs, 
@@ -48,11 +43,13 @@ and be sure to click **Save**
 #### Give other users access to the solution website
 1. On https://portal.azure.com go to the **Azure Active Directory** resource and select **Enterprise applications**.
 1. Change the selection in the **Application Type** dropdown to **All Applications** and click **Apply**.
-1. Find the deployment you are attempting to administer and select it. Searching by deployment name (e.g. MyDeployment) using the text box right below the **Application Type** dropdown might be helpful.
+1. Find the deployment you are attempting to administer and select it. Searching by deployment name (e.g. MyDeployment) 
+    using the text box right below the **Application Type** dropdown might be helpful.
 1. Click **Users and groups** from the **Manage** section of the vertical menu choices.
 1. Select **Add user** from the button options above the list of current users.
 1. In the **Add Assignment** panel that appears select **User**
-1. In the subsequent dialog, either select a user who is already a part of your organization or invite a new user with the *Search* box, and click **Select**
+1. In the subsequent dialog, either select a user who is already a part of your organization or invite a new 
+    user with the *Search* box, and click **Select**
 1. Back in the **Add Assignment** panel **Select Role**
 1. Choose either **Admin** or **Read Only** as appropriate and click **Select**
 1. Finally click **Assign**
