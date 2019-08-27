@@ -19,7 +19,7 @@ message ImageBody {
   string time = 2;
   string type = 3;
   bytes image = 4;
-  bytes smallImage = 5;
+  bytes smallImageRGB = 5;
   bool skipMlProcessing = 6;
 }
 

@@ -2,10 +2,6 @@
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using Tensorflow.Serving;
 using VideoProcessorModule;
 
@@ -15,16 +11,23 @@ namespace FpgaClient
     {
         Channel grpcChannel = null;
         PredictionService.PredictionServiceClient grpcClient = null;
+        float rRefLevel;
+        float gRefLevel;
+        float bRefLevel;
 
         /// <summary>
         /// GrpcClient contains retry logic, and the constructor does not throw.
         /// Call Disconnect on program shutdown.
         /// </summary>
         /// <param name="hostAddress">The name of the Module rather than the server for IoT Edge Modules</param>
-        public FpgaModel(string hostAddress, int portNumber)
+        public FpgaModel(string hostAddress, int portNumber, string fpgaRefLevelRGB)
         {
             this.HostAddress = hostAddress;
             PortNumber = portNumber;
+            string[] parts = fpgaRefLevelRGB.Replace(" ", "").Split(',');
+            rRefLevel = float.Parse(parts[0]);
+            gRefLevel = float.Parse(parts[1]);
+            bRefLevel = float.Parse(parts[2]);
         }
 
         public string HostAddress { get; private set; }
@@ -55,34 +58,26 @@ namespace FpgaClient
             try
             {
                 IScoringRequest request = null;
-                float[] offsets = new float[] { 123, 117, 104 };
-                using (MemoryStream stream = new MemoryStream(image.ToByteArray()))
-                using (Bitmap bitmap = new Bitmap(stream))
+                float[] values = new float[image.Length];
+                int idx = 0;
+                while(idx < image.Length)
                 {
-                    int width = bitmap.Width;
-                    int height = bitmap.Height;
-                    float[] values = new float[3 * width * height];
-                    int valuesIdx = 0;
+                    values[idx] = image[idx] - rRefLevel;
+                    idx++;
+                    values[idx] = image[idx] - gRefLevel;
+                    idx++;
+                    values[idx] = image[idx] - bRefLevel;
+                    idx++;
+                }
 
-                    for (int i = 0; i < height; i++)
-                    {
-                        for (int j = 0; j < width; j++)
-                        {
-                            var pixel = bitmap.GetPixel(j, i);
-                            values[valuesIdx++] = pixel.B - offsets[0];
-                            values[valuesIdx++] = pixel.G - offsets[1];
-                            values[valuesIdx++] = pixel.R - offsets[2];
-                        }
-                    }
-                    int[] shape = new int[] { 1, 300, 300, 3 };
-                    Tuple<float[], int[]> tuple = new Tuple<float[], int[]>(values, shape);
-                    Dictionary<string, Tuple<float[], int[]>> inputs = new Dictionary<string, Tuple<float[], int[]>>
+                int[] shape = new int[] { 1, 300, 300, 3 };
+                Tuple<float[], int[]> tuple = new Tuple<float[], int[]>(values, shape);
+                Dictionary<string, Tuple<float[], int[]>> inputs = new Dictionary<string, Tuple<float[], int[]>>
                 {
                     { "brainwave_ssd_vgg_1_Version_0.1_input_1:0", tuple }
                 };
 
-                    request = new FloatRequest(inputs);
-                }
+                request = new FloatRequest(inputs);
 
                 PredictResponse response = Predict(request.MakePredictRequest());
                 if (response != null)

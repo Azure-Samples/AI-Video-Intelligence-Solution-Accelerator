@@ -1,0 +1,36 @@
+# For the opencv build (runs from build dir)
+cmake -D CMAKE_GENERATOR_PLATFORM=x64 -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=../../install -D BUILD_EXAMPLES=OFF ../opencv
+
+# For opencvsharp (runs from build dir)
+cmake -D CMAKE_GENERATOR_PLATFORM=x64 -D CMAKE_INSTALL_PREFIX=../../install ../opencvsharp/src
+# For linux
+git checkout 4.1.0.20190417
+cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=../../install ../opencvsharp/src
+
+# The pre-make installs
+apt-get update && apt-get install -y wget build-essential cmake git pkg-config libavcodec-dev libavformat-dev libswscale-dev
+
+# Copy the built opencv to the /usr/local
+cp -r /opencv-build/install/usr/local /usr
+
+
+
+
+docker run -p 2222:22 -it --rm --name royOpenCVFull opencvfull:0.0.2
+
+git clone https://github.com/shimat/opencvsharp.git
+cd opencvsharp
+git fetch --all --tags --prune && git checkout 4.1.0.20190417
+
+
+
+cd opencvsharp/src
+mkdir build
+cd build
+cmake -D CMAKE_INSTALL_PREFIX=/usr/local ..
+make -j 
+make install
+
+
+
+cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/opencvsharp-build/install/usr/local ..

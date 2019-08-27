@@ -15,6 +15,7 @@ namespace VideoProcessorModule
     using VideoProcessorGrpc;
     using Microsoft.Azure.Devices.Shared;
     using FpgaClient;
+    using Newtonsoft.Json.Linq;
 
     class Program
     {
@@ -92,11 +93,20 @@ namespace VideoProcessorModule
                 {
                     Console.WriteLine("Desired property change:");
                     Console.WriteLine(JsonConvert.SerializeObject(desiredProperties));
+                    string fpgaRefLevelRGB = "123, 117, 104";
 
                     string mlModelType = CpuModel.CpuModelProcessorType;
                     if (desiredProperties.Contains("mlModelType"))
                     {
                         mlModelType = desiredProperties["mlModelType"];
+                    }
+                    if (desiredProperties.Contains("FPGA"))
+                    {
+                        JObject fpgaProps = desiredProperties["FPGA"];
+                        if (fpgaProps["rgbRefLevel"] != null)
+                        {
+                            fpgaRefLevelRGB = (string)fpgaProps["rgbLevel"];
+                        }
                     }
                     Console.WriteLine($"Model type: {mlModelType}");
                     // Default to "CPU" on malformed input
@@ -130,7 +140,7 @@ namespace VideoProcessorModule
                                 s_currentModel = new GpuModel();
                                 break;
                             case FpgaModel.FpgaModelProcessorType:
-                                s_currentModel = new FpgaModel("voiddetectionbrainwave", 50051);
+                                s_currentModel = new FpgaModel("voiddetectionbrainwave", 50051, fpgaRefLevelRGB);
                                 break;
                             case CpuModel.CpuModelProcessorType:
                             default:

@@ -1,9 +1,4 @@
 using System;
-using System.Drawing;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -54,7 +49,7 @@ namespace VideoProcessorModule
             {
                 // Perform and measure elapsed time for the ML model work
                 DateTime startTime = DateTime.Now;
-                proc.features = imageProc.Process(body.SmallImage);
+                proc.features = imageProc.Process(body.SmallImageRGB);
                 proc.recognitionDuration = DateTime.Now - startTime;
 
                 // Loop to the next recognition task without waiting for the report to process
@@ -98,7 +93,7 @@ namespace VideoProcessorModule
             lock(reportLock)
             {
                 Console.WriteLine($"Processing took the {processorType} {recognitionDuration.TotalMilliseconds} msec for {body.CameraId}   {body.Time}.");
-                Console.WriteLine($"  Recognized {features.Count} features in {body.SmallImage.Length} byte 300x300 image.");
+                Console.WriteLine($"  Recognized {features.Count} features in {body.SmallImageRGB.Length} byte 300x300 image.");
 
                 string verb = "upload image to BLOB store";
                 try
