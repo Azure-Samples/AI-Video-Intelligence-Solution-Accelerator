@@ -1,4 +1,5 @@
 ﻿using BlobStorage;
+using OpenCvSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +12,6 @@ namespace CameraModule
     public class Simulator : IImageSource
     {
         private readonly static string[] simulatedImageNames;
-        private readonly static List<string> smallSimulatedImageNames = new List<string>();
         private readonly static Dictionary<int, List<int>> cycles = new Dictionary<int, List<int>>();
 
         /// <summary>
@@ -29,10 +29,6 @@ namespace CameraModule
             {
                 Console.WriteLine($"Found simulated image file: {str}");
                 string baseImageName = Path.GetFileName(str);
-                string smallImageDirectory = Path.Combine(Path.GetDirectoryName(str), "300x300");
-                string smallImagePath = Path.ChangeExtension(Path.Combine(smallImageDirectory, baseImageName), "png");
-                Console.WriteLine($"     Small image file: {smallImagePath}");
-                smallSimulatedImageNames.Add(smallImagePath);
 
                 // If this image is part of an image cycle, add it to that image cycle record
                 if (baseImageName.StartsWith("cycle-"))
@@ -102,7 +98,7 @@ namespace CameraModule
         /// Retrieve images from a camera.
         /// </summary>
         /// <returns>The large and small images</returns>
-        ImageBody IImageSource.RequestImages()
+        byte[] IImageSource.RequestImage()
         {
             // If we're not cycling then this.imageIndex is what we want. Otherwise
             // we need to cycle.
@@ -114,29 +110,10 @@ namespace CameraModule
                 this.imageIndex++;
                 this.imageIndex = this.imageIndex % selectedCycle.Count;
             }
-            DateTime now = BlobStorageHelper.GetImageUtcTime();
-            string nowString = BlobStorageHelper.FormatImageUtcTime(now);
             string filename = simulatedImageNames[simulatedImageIndex];
-            string smallImageFilename = smallSimulatedImageNames[simulatedImageIndex];
-            if (simulatedImageIndex >= simulatedImageNames.Length)
-            {
-                simulatedImageIndex = 0;
-            }
             byte[] content = File.ReadAllBytes(filename);
-            byte[] smallContent = File.ReadAllBytes(smallImageFilename);
 
-            Google.Protobuf.ByteString image = Google.Protobuf.ByteString.CopyFrom(content);
-            Google.Protobuf.ByteString smallImage = Google.Protobuf.ByteString.CopyFrom(smallContent);
-
-            ImageBody body = new ImageBody
-            {
-                Time = nowString,
-                Type = "jpg",
-                Image = image,
-                SmallImage = smallImage
-            };
-
-            return body;
+            return content;
         }
 
         void IImageSource.Disconnect()

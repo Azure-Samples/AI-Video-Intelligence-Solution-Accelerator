@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="OpenCvSharp4" Version="4.1.0.20190416" />
+    <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.1.0.20190416" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EdgeDevice\modules\CameraModule\CameraModule.csproj" />
     <ProjectReference Include="..\EdgeDevice\modules\VideoProcessorModule\VideoProcessorModule.csproj" />
   </ItemGroup>
 

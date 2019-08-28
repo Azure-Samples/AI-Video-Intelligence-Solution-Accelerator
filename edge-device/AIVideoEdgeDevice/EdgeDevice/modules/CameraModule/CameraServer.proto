@@ -21,6 +21,5 @@ message ImageRequest {
 // Error is an empty string for success
 message ImageReply {
   string error = 1;
-  bytes fullImage = 2;
-  bytes smallImage = 3;
+  bytes image = 2;
 }

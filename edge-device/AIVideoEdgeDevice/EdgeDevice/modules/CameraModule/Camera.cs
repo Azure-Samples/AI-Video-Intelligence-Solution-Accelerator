@@ -4,7 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using BlobStorage;
+using Google.Protobuf;
+using Google.Protobuf.Collections;
 using Newtonsoft.Json.Linq;
+using OpenCvSharp;
 using VideoProcessorGrpc;
 
 namespace CameraModule
@@ -123,17 +126,27 @@ namespace CameraModule
         {
             DateTime now = BlobStorageHelper.GetImageUtcTime();
             string nowString = BlobStorageHelper.FormatImageUtcTime(now);
+            byte[] imageBytes = this.ImageSource.RequestImage();
 
-            ImageBody result = this.ImageSource.RequestImages();
-            if (result != null)
+            if (imageBytes != null)
             {
-                result.CameraId = CameraId;
-                result.Time = nowString;
-                result.Type = "jpg";
-                result.SkipMlProcessing = this.SkipMLProcessing;
+                ByteString image = ByteString.CopyFrom(imageBytes);
+                ByteString smallImage = Camera.ShrinkJpegTo300x300(imageBytes);
+                ImageBody result = new ImageBody
+                {
+                    CameraId = CameraId,
+                    Time = nowString,
+                    Type = "jpg",
+                    Image = image,
+                    SmallImageRGB = smallImage,
+                    SkipMlProcessing = this.SkipMLProcessing
+                };
+                return result;
             }
-
-            return result;
+            else
+            {
+                return null;
+            }
         }
 
         private void Start()
@@ -171,6 +184,27 @@ namespace CameraModule
                 }
                 Task.Delay(MillisecondsBetweenImages).Wait();
             }
+        }
+
+        public static ByteString ShrinkJpegTo300x300(byte[] jpegImage)
+        {
+            var src = Cv2.ImDecode(jpegImage, ImreadModes.Color);
+            OpenCvSharp.Size size = new OpenCvSharp.Size(300, 300);
+            Mat dest = new Mat();
+            Cv2.Resize(src, dest, size, 0, 0, InterpolationFlags.Area);
+            Mat destRGB = new Mat();
+            // Convert OpenCV's BGR to RGB
+            Cv2.CvtColor(dest, destRGB, ColorConversionCodes.BGR2RGB);
+            ByteString result = null;
+            unsafe
+            {
+                using (UnmanagedMemoryStream stream = new UnmanagedMemoryStream((byte*)destRGB.Data, 300 * 300 * 3))
+                {
+                    result = ByteString.FromStream(stream);
+                }
+            }
+
+            return result;
         }
     }
 }

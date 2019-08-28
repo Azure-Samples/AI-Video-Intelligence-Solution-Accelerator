@@ -1,0 +1,31 @@
+FROM microsoft/dotnet:2.2-sdk
+
+RUN apt-get update && apt-get install -y \ 
+    wget \
+    build-essential \ 
+    cmake \ 
+    git \
+    pkg-config \
+    libavcodec-dev \
+    libavformat-dev \
+    libswscale-dev \
+    && mkdir -p /opencv-build/install/usr/local \
+    && cd /opencv-build \
+    && git clone https://github.com/opencv/opencv.git \ 
+    && git clone https://github.com/opencv/opencv_contrib.git \ 
+    && cd /opencv-build/opencv \
+    && git checkout 4.1.0 \
+    && cd /opencv-build/opencv_contrib \
+    && git checkout 4.1.0 \
+    && cd /opencv-build \
+    && mkdir -p build \
+    && cd build \
+    && cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D OPENCV_EXTRA_MODULES_PATH=/opencv-build/opencv_contrib/modules \
+    -D CMAKE_INSTALL_PREFIX=/opencv-build/install/usr/local \ 
+    -D BUILD_EXAMPLES=OFF ../opencv \
+    && make -j4 \
+    && make install \ 
+    && cp -r /opencv-build/install/usr/local /usr \
+    && ldconfig
+    

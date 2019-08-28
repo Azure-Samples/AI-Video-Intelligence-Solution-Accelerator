@@ -9,10 +9,10 @@ namespace CameraModule
     public interface IImageSource
     {
         /// <summary>
-        /// Return an ImageBody with the two images filled in
+        /// Return an ImageBody with the jpeg image filled in
         /// </summary>
         /// <returns></returns>
-        VideoProcessorGrpc.ImageBody RequestImages();
+        byte[] RequestImage();
 
         void Disconnect();
     }

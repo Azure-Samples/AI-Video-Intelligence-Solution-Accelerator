@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Google.Protobuf;
+using System;
 using System.Collections.Generic;
 using System.Text;
-//using FpgaGrpc;
 
 namespace VideoProcessorModule
 {
@@ -46,7 +46,7 @@ namespace VideoProcessorModule
         /// </summary>
         /// <param name="image"></param>
         /// <returns>Null on error, otherwise a list of recognized features</returns>
-        List<ImageFeature> Process(Google.Protobuf.ByteString image);
+        List<ImageFeature> Process(ByteString image);
 
         string ProcessorType { get; }
 

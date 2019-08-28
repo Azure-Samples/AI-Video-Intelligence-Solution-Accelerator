@@ -48,7 +48,7 @@ namespace CameraModule
         /// </summary>
         /// <param name="body"></param>
         /// <returns>True for success</returns>
-        private ImageReply RequestImage(ImageRequest body)
+        private byte[] RequestImage(ImageRequest body)
         {
             bool succeeded = false;
             try
@@ -63,7 +63,7 @@ namespace CameraModule
                 else
                 {
                     succeeded = true;
-                    return result;
+                    return result.Image.ToByteArray();
                 }
             }
             catch (Grpc.Core.RpcException ex)
@@ -105,23 +105,11 @@ namespace CameraModule
             }
         }
 
-        VideoProcessorGrpc.ImageBody IImageSource.RequestImages()
+        byte[] IImageSource.RequestImage()
         {
             ImageRequest request = new ImageRequest() { CameraHardwareId = HardwareId };
-            ImageReply reply = RequestImage(request);
-            if (reply != null)
-            {
-                VideoProcessorGrpc.ImageBody result = new VideoProcessorGrpc.ImageBody()
-                {
-                    Image = reply.FullImage,
-                    SmallImage = reply.SmallImage
-                };
-                return result;
-            }
-            else
-            {
-                return null;
-            }
+            byte[] reply = RequestImage(request);
+            return reply;
         }
     }
 }

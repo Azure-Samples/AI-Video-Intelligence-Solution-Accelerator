@@ -1,0 +1,1 @@
+docker build  --rm -f "Dockerfile.amd64-opencvsharp-runtime" -t azureaivideo/opencvsharp-runtime:4.1.0 .

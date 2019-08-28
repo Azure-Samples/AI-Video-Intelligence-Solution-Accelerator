@@ -1,8 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using Google.Protobuf;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -18,7 +17,7 @@ namespace VideoProcessorModule
 
         public string ProcessorType { get { return CpuModelProcessorType; } }
 
-        public List<ImageFeature> Process(Google.Protobuf.ByteString image)
+        public List<ImageFeature> Process(ByteString image)
         {
             string imageJson = MakeImageJson(image);
             if (imageJson != null)
@@ -47,38 +46,39 @@ namespace VideoProcessorModule
         /// A string containing the JSON representation of the image to be
         /// processed by the model.
         /// </returns>
-        private string MakeImageJson(Google.Protobuf.ByteString image)
+        private string MakeImageJson(ByteString image)
         {
             DateTime then = DateTime.Now;
 
             try
             {
+                int width = 300;
+                int height = 300;
+                int imageIdx = 0;
                 StringBuilder sb = new StringBuilder("{\"img\": [");
 
                 // Rehydrate the .png file as a Bitmap
-                using (MemoryStream stream = new MemoryStream(image.ToByteArray()))
-                using (Bitmap bitmap = new Bitmap(stream))
+                for (int i = 0; i < height; i++)
                 {
-                    int width = bitmap.Width;
-                    int height = bitmap.Height;
-
-                    for (int i = 0; i < height; i++)
+                    sb.Append('[');
+                    for (int j = 0; j < width; j++)
                     {
-                        sb.Append('[');
-                        for (int j = 0; j < width; j++)
-                        {
-                            var pixel = bitmap.GetPixel(j, i);
-                            sb.AppendFormat("[{0},{1},{2}]", pixel.R, pixel.G, pixel.B);
-                            if (j < width - 1)
-                                sb.Append(',');
-                        }
-
-                        sb.Append(']');
-                        if (i < height - 1)
+                        int R = image[imageIdx];
+                        imageIdx++;
+                        int G = image[imageIdx];
+                        imageIdx++;
+                        int B = image[imageIdx];
+                        imageIdx++;
+                        sb.AppendFormat("[{0},{1},{2}]", R, G, B);
+                        if (j < width - 1)
                             sb.Append(',');
                     }
-                    sb.Append("]}");
+
+                    sb.Append(']');
+                    if (i < height - 1)
+                        sb.Append(',');
                 }
+                sb.Append("]}");
 
                 return sb.ToString();
             }
