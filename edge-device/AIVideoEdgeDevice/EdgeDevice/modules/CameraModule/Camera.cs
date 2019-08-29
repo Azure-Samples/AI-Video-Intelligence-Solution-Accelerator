@@ -70,7 +70,7 @@ namespace CameraModule
                     case "simulator": cam.ImageSource = new Simulator(cam.Port);
                         s_cameras.Add(cam);
                         break;
-                    case "CameraServer": cam.ImageSource = new CameraServerClient(cam.Port);
+                    case "http": cam.ImageSource = new HttpClient(cam.Port);
                         s_cameras.Add(cam);
                         break;
                     case "disabled":

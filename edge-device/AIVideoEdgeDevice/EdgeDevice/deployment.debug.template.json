@@ -128,16 +128,16 @@
             "disabled": false
           },
           "cam003": {
-            "port": "MY_SERVER//700",
+            "port": "http://my_server:8080/image/700",
             "id": "real_camera",
-            "type": "CameraServer",
+            "type": "http",
             "secondsBetweenImages": 10.0,
             "disabled": true
           },
           "cam004": {
-            "port": "MY_SERVER//701",
+            "port": "http://my_server:8080/image/701",
             "id": "training_images_camera",
-            "type": "CameraServer",
+            "type": "http",
             "secondsBetweenImages": 1.0,
             "skipMLProcessing": true,
             "disabled": true

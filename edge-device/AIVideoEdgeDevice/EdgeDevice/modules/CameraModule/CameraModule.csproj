@@ -20,7 +20,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Remove="CameraServer.proto" />
     <None Remove="VideoProcessorGrpc.proto" />
   </ItemGroup>
 
@@ -47,7 +46,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Protobuf Include="CameraServer.proto" GrpcServices="Client" />
     <Protobuf Include="VideoProcessorGrpc.proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>

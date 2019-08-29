@@ -8,9 +8,9 @@ output available as an HTTP web service that is compatible with the
 ### Limitations
 The AI Video Camera Server sample code and does not include features needed for production 
 including:
-* **Transport security:** The AI Video Camera Server serves images via gRPC over HTTP, but
+* **Transport security:** The AI Video Camera Server serves images over HTTP, but
 production servers will need mutually authenticated TLS. This feature is easy to 
-add to gRPC.
+add.
 * **Error recovery:** As sample code, AI Video Camera Server does only minimal error checking.
 * **Linux support:** Production scenarios will almost always have Camera Server equivalents
 running on Linux, but the AI Video Camera Server is currently Windows-only.
@@ -20,7 +20,8 @@ running on Linux, but the AI Video Camera Server is currently Windows-only.
 
 ### Building
 1. Clone [this github repo](https://github.com/Azure-Samples/AI-Video-Intelligence-Solution-Accelerator) in a convenient location.
-1. Open the [AI Video Camera Server solution]() in Visual Studio.
+1. Open Visual Studio as Administrator.
+1. Open the [AI Video Camera Server solution]().
 3. Click `Ctl-Shift-B` to build the solution.
 
 ### Running with camera identification
@@ -34,6 +35,10 @@ CameraId will be labeled in the image window.
 ### Running without camera identification
 1. Click `Ctrl-F5` to run the server with no image windows. The web server will start immediately.
 
+### Running without Visual Studio
+After you have built CameraServer.exe, you can run it without Visual Studio. Remember to run
+it "As Administrator".
+
 ### Point the Edge device's CameraModule at your CameraServer
 To make your Edge device retrieve images from your CameraServer,
 1. Determin your CameraServer machine identification:
@@ -46,9 +51,9 @@ To make your Edge device retrieve images from your CameraServer,
 the Module Twin for CameraModule so there is a camera entry that looks like this:
 ```
         "cam003": {
-          "port": "MY_SERVER//700",
+          "port": "http://MY_SERVER:8080/image/700",
           "id": "real_camera",
-          "type": "CameraServer",
+          "type": "http",
           "secondsBetweenImages": 10,
           "disabled": false
         },
@@ -62,9 +67,9 @@ the Module Twin for CameraModule so there is a camera entry that looks like this
 the Module Twin for CameraModule so there is a camera entry that looks like this:
 ```
         "cam004": {
-          "port": "MY_SERVER//700",
+          "port": "http://MY_SERVER:8080/image/700",
           "id": "training_images_camera",
-          "type": "CameraServer",
+          "type": "http",
           "secondsBetweenImages": 1,
           "skipMLProcessing": true,
           "disabled": false
