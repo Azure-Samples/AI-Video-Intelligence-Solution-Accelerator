@@ -93,7 +93,7 @@ namespace VideoProcessorModule
                 {
                     Console.WriteLine("Desired property change:");
                     Console.WriteLine(JsonConvert.SerializeObject(desiredProperties));
-                    string fpgaRefLevelRGB = "123, 117, 104";
+                    string fpgaRefLevelRGB = "104, 117, 123";
 
                     string mlModelType = CpuModel.CpuModelProcessorType;
                     if (desiredProperties.Contains("mlModelType"))
@@ -105,7 +105,7 @@ namespace VideoProcessorModule
                         JObject fpgaProps = desiredProperties["FPGA"];
                         if (fpgaProps["rgbRefLevel"] != null)
                         {
-                            fpgaRefLevelRGB = (string)fpgaProps["rgbLevel"];
+                            fpgaRefLevelRGB = (string)fpgaProps["rgbRefLevel"];
                         }
                     }
                     Console.WriteLine($"Model type: {mlModelType}");
