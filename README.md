@@ -1,4 +1,6 @@
 # AI Video Intelligence Solution Accelerator
+![](https://github.com/Azure-Samples/AI-Video-Intelligence-Solution-Accelerator/blob/master/images/Screenshot_Solution_Accelerator.png)
+
 The AI Video Intelligence Solution Accelerator is a variant of the
 [Azure IoT .NET solution for Remote Monitoring](https://github.com/Azure/azure-iot-pcs-remote-monitoring-dotnet)
 which uses specialized Azure IoT Edge devices to capture and process video input from cameras.
