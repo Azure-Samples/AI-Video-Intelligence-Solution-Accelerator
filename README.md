@@ -6,9 +6,11 @@ The AI Video Intelligence Solution Accelerator is a variant of the
 which uses specialized Azure IoT Edge devices to capture and process video input from cameras.
 
 The IoT Edge devices used by this solution are capable of simulating camera input, so physical
-cameras are not required to build and demonstrate the solution. The primary platform for 
-the IoT Edge devices in this solution accelerator is
-Azure Data Box Edge, but non-DBE computers can also be used.
+cameras are not required to build and demonstrate the solution. To get started, deploy the IoT Edge device to an Azure Cloud VM.  This will leverage an IoT Edge based Azure Cloud VM and deploy the trained Azure ML CPU-based model to that VM.  Once you subscribe to Azure Data Box Edge, you can deploy the IoT Edge modules to the Data Box Edge and benefit from the included Azure ML FPGA acceleration.  
+
+![](https://github.com/Azure-Samples/AI-Video-Intelligence-Solution-Accelerator/blob/master/images/Architecture.png)
+
+There are two parts of the solution accelerator: the cloud solution and the edge device that runs on-premises.  The cloud solution leverages Azure IoT Hub to manage the deployment to the device and maintain device health.  An instance of Azure App Service is used to deploy a web-site that enables an operator portal experience.  A number of other Azure services are used to enable storage, analytics via Azure Time Series Insights, stream processing via Azure Stream Analytics, integration via Azure Logic Apps, maps via Azure Maps, database via Azure CosmosDB, etc...
 
 ### Prerequisites
 * Microsoft Azure subscription
