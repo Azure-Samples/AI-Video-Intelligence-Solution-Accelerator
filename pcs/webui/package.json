@@ -14,7 +14,7 @@
     "i18next-xhr-backend": "1.5.1",
     "immutability-helper": "2.8.1",
     "moment": "2.22.2",
-    "node-sass": "4.11.0",
+    "node-sass": "7.0.0",
     "normalizr": "3.3.0",
     "prop-types": "15.6.2",
     "query-string": "6.2.0",
