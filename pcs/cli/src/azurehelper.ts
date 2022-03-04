@@ -1,7 +1,7 @@
-import * as uuid from 'uuid';
-import { AzureEnvironment, DeviceTokenCredentials } from 'ms-rest-azure';
-import { ServiceClientCredentials } from 'ms-rest';
-import AuthorizationManagementClient = require('azure-arm-authorization');
+import * as uuid from "uuid";
+import { AzureEnvironment, DeviceTokenCredentials } from "ms-rest-azure";
+import { InteractiveBrowserCredential } from "@azure/identity";
+import AuthorizationManagementClient = require("@azure/arm-authorization");
 
 export interface IAzureHelper {
     assignContributorRoleOnSubscription(principalId: string): Promise<boolean>;
@@ -19,14 +19,14 @@ export interface IAzureHelper {
 
 export class AzureHelper implements IAzureHelper {
     private _environment: AzureEnvironment;
-    private _credentials: ServiceClientCredentials;
+    private _credentials: InteractiveBrowserCredential;
     private _subscriptionId: string;
     private MAX_RETRYCOUNT = 36;
     private SLEEP_TIME = 5000;
-    private CONTRIBUTOR_ROLE_ID = 'b24988ac-6180-42a0-ab88-20f7382dd24c';
-    private OWNER_ROLE_ID = '8e3af657-a8ff-443c-a75c-2fe8c4bcb635';
+    private CONTRIBUTOR_ROLE_ID = "b24988ac-6180-42a0-ab88-20f7382dd24c";
+    private OWNER_ROLE_ID = "8e3af657-a8ff-443c-a75c-2fe8c4bcb635";
 
-    constructor(environment: AzureEnvironment, subscriptionId: string, credentials: ServiceClientCredentials) {
+    constructor(environment: AzureEnvironment, subscriptionId: string, credentials: InteractiveBrowserCredential) {
         this._environment = environment;
         this._subscriptionId = subscriptionId;
         this._credentials = credentials;
@@ -112,7 +112,7 @@ export class AzureHelper implements IAzureHelper {
 
     public getStorageEndpointSuffix(): string {
         let storageEndpointSuffix = this._environment.storageEndpointSuffix;
-        if (storageEndpointSuffix.startsWith('.')) {
+        if (storageEndpointSuffix.startsWith(".")) {
             storageEndpointSuffix = storageEndpointSuffix.substring(1);
         }
         return storageEndpointSuffix;
@@ -121,24 +121,24 @@ export class AzureHelper implements IAzureHelper {
     public getVMFQDNSuffix(): string {
         switch (this._environment.name) {
             case AzureEnvironment.AzureChina.name:
-                return 'cloudapp.chinacloudapi.cn';
+                return "cloudapp.chinacloudapi.cn";
             case AzureEnvironment.AzureGermanCloud.name:
-                return 'cloudapp.azure.de';
+                return "cloudapp.azure.de";
             case AzureEnvironment.AzureUSGovernment.name:
-                return 'cloudapp.azure.us';
+                return "cloudapp.azure.us";
             default:
                 // use default parameter values of global azure environment
-                return 'cloudapp.azure.com';
+                return "cloudapp.azure.com";
         }
     }
 
     public getServiceBusEndpointSuffix(): string {
         switch (this._environment.name) {
             case AzureEnvironment.AzureChina.name:
-                return 'servicebus.chinacloudapi.cn';
+                return "servicebus.chinacloudapi.cn";
             default:
                 // use default parameter values of global azure environment
-                return 'servicebus.windows.net';
+                return "servicebus.windows.net";
         }
     }
 
@@ -149,18 +149,18 @@ export class AzureHelper implements IAzureHelper {
     // Internal cloud names for diagnostics
     public getCloudType(): string {
         const cloudTypeMaps = {
-            [AzureEnvironment.Azure.name]: 'Global',
-            [AzureEnvironment.AzureChina.name]: 'China',
-            [AzureEnvironment.AzureUSGovernment.name]: 'Fairfax',
-            [AzureEnvironment.AzureGermanCloud.name]: 'Germany',
+            [AzureEnvironment.Azure.name]: "Global",
+            [AzureEnvironment.AzureChina.name]: "China",
+            [AzureEnvironment.AzureUSGovernment.name]: "Fairfax",
+            [AzureEnvironment.AzureGermanCloud.name]: "Germany",
         };
         return cloudTypeMaps[this._environment.name];
     }
 
     private getPatchedDeviceTokenCredentials(options: any) {
         const credentials: any = new DeviceTokenCredentials(options);
-        // clean the default username of 'user@example.com' which always fail the token search in cache when using service principal login option.
-        if (credentials.hasOwnProperty('username') && credentials.username === 'user@example.com') {
+        // clean the default username of "user@example.com" which always fail the token search in cache when using service principal login option.
+        if (credentials.hasOwnProperty("username") && credentials.username === "user@example.com") {
             delete credentials.username;
         }
         return credentials;
