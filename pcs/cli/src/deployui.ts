@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 import * as inquirer from 'inquirer';
-import * as ResourceManagement from 'azure-arm-resource';
+import * as ResourceManagement from '@azure/arm-resource';
 
 type DeploymentOperationsListResult = ResourceManagement.ResourceModels.DeploymentOperationsListResult;
 type DeploymentOperation = ResourceManagement.ResourceModels.DeploymentOperation;

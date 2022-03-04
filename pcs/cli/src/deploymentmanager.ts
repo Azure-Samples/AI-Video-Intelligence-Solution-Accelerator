@@ -6,10 +6,10 @@ import * as fetch from 'node-fetch';
 import * as cp from 'child_process';
 import * as momemt from 'moment';
 
-import { ResourceManagementClient, ResourceModels } from 'azure-arm-resource';
+import { ResourceManagementClient, ResourceModels } from '@azure/arm-resource';
 import { AzureEnvironment, DeviceTokenCredentials, DeviceTokenCredentialsOptions, ApplicationTokenCredentials } from 'ms-rest-azure';
-import { ContainerServiceClient, ContainerServiceModels} from 'azure-arm-containerservice';
-import StreamAnalyticsManagementClient = require('azure-arm-streamanalytics');
+import { ContainerServiceClient, ContainerServiceModels} from '@azure/arm-containerservice';
+import StreamAnalyticsManagementClient = require('@azure/arm-streamanalytics');
 import { Answers, Question } from 'inquirer';
 import DeployUI from './deployui';
 import { Client, ConnectConfig, SFTPWrapper } from 'ssh2';
@@ -19,7 +19,7 @@ import { genPassword } from './utils';
 import { TokenCredentials, ServiceClientCredentials } from 'ms-rest';
 import { safeLoad, safeDump } from 'js-yaml';
 import { mergeWith, isArray } from 'lodash';
-import { NetworkManagementClient, NetworkManagementModels } from 'azure-arm-network';
+import { NetworkManagementClient, NetworkManagementModels } from '@azure/arm-network';
 import { IAzureHelper, AzureHelper } from './azurehelper';
 
 type ResourceGroup = ResourceModels.ResourceGroup;

@@ -17,10 +17,10 @@ import {
     UserTokenCredentials,
     ApplicationTokenCredentials
 } from 'ms-rest-azure';
-import { SubscriptionClient, SubscriptionModels, ResourceManagementClient, ResourceModels } from 'azure-arm-resource';
+import { SubscriptionClient, SubscriptionModels, ResourceManagementClient, ResourceModels } from '@azure/arm-resource';
 import GraphRbacManagementClient from 'azure-graph';
-import AuthorizationManagementClient = require('azure-arm-authorization');
-import ComputeManagementClient = require('azure-arm-compute');
+import AuthorizationManagementClient = require('@azure/arm-authorization');
+import ComputeManagementClient = require('@azure/arm-compute');
 import { Command } from 'commander';
 
 import { Answers, Question } from 'inquirer';
@@ -35,12 +35,12 @@ import {
     ApplicationCreateParameters,
     ServicePrincipalListResult
 } from 'azure-graph/lib/models';
-import { SubscriptionListResult } from 'azure-arm-resource/lib/subscription/models';
+import { SubscriptionListResult } from '@azure/arm-resource/lib/subscription/models';
 import { TokenCredentials, ServiceClientCredentials } from 'ms-rest';
 import Validator from './validator';
 import inquirer = require('inquirer');
 
-const WebSiteManagementClient = require('azure-arm-website');
+const WebSiteManagementClient = require('@azure/arm-appservice');
 
 const packageJson = require('../package.json');
 
