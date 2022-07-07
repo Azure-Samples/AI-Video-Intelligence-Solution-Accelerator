@@ -89,7 +89,7 @@
     "jsonpath": "^1.0.0",
     "lodash": "^4.17.11",
     "mocha": "^5.2.0",
-    "moment": "2.21.0",
+    "moment": "2.29.4",
     "ms-rest": "2.3.4",
     "ms-rest-azure": "2.5.7",
     "node-fetch": "1.7.3",
