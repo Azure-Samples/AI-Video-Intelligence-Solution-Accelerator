@@ -64,8 +64,8 @@
     "@types/ssh2": "0.5.35",
     "copyfiles": "1.2.0",
     "import-sort": "2.4.0",
-    "jest": "20.0.4",
-    "ts-jest": "20.0.6",
+    "jest": "29.3.1",
+    "ts-jest": "29.0.3",
     "ts-node": "3.0.6",
     "tslint": "5.4.3",
     "typescript": "2.8.1"
