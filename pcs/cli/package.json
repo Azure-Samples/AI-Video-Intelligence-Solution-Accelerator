@@ -88,7 +88,7 @@
     "json-loader": "0.5.4",
     "jsonpath": "^1.0.0",
     "lodash": "^4.17.11",
-    "mocha": "^5.2.0",
+    "mocha": "^10.2.0",
     "moment": "2.21.0",
     "ms-rest": "2.3.4",
     "ms-rest-azure": "2.5.7",
